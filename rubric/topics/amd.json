@@ -1,0 +1,93 @@
+{
+  "topic_id": "2.4",
+  "topic_slug": "amd",
+  "group": 2,
+  "title": "Phân loại Thoái hóa hoàng điểm tuổi già (AMD) qua ảnh đáy mắt",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "multiclass",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/amd",
+  "source": "HMYT docs/du_an/amd.md",
+  "dataset": "AREDS, iChallenge-AMD",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "shap",
+    "saliency"
+  ],
+  "xai_mandatory": true,
+  "benchmarks": [
+    {
+      "citekey": "abdelkhalek2024concentrated",
+      "note": "Phân loại 4 lớp, accuracy 96,85%"
+    },
+    {
+      "citekey": "shi2025enhancing",
+      "note": "Ví dụ mẫu XAI nâng cao — multi-task, AUC 0,96"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.MACULA_ROI",
+      "title": "Cắt ROI vùng hoàng điểm",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "crop|\\bROI\\b|macula|hoàng điểm"
+      ],
+      "severity": "minor",
+      "suggestion": "Cắt ROI quanh hoàng điểm trước khi đưa vào mạng.",
+      "source": "HMYT docs/du_an/amd.md"
+    },
+    {
+      "id": "T.RESNET18_BASELINE",
+      "title": "Baseline ResNet-18 thô trước kiến trúc phức tạp",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "resnet[_-]?18"
+      ],
+      "severity": "minor",
+      "suggestion": "Chạy ResNet-18 (pretrained ImageNet, không tinh chỉnh kiến trúc) làm mốc so sánh.",
+      "source": "HMYT docs/du_an/amd.md"
+    },
+    {
+      "id": "T.PER_CLASS",
+      "title": "Đa độ đo theo từng lớp",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "classification_report|per.?class|theo từng lớp|average\\s*=\\s*None"
+      ],
+      "severity": "minor",
+      "suggestion": "Báo cáo Sensitivity/Specificity/F1 cho từng lớp (bình thường/trung gian/GA/AMD ướt).",
+      "source": "HMYT docs/du_an/amd.md"
+    },
+    {
+      "id": "T.LESION_ANATOMY",
+      "title": "Grad-CAM/SHAP đối chiếu drusen/xuất huyết/teo địa",
+      "milestone": "M4",
+      "criterion": "M4.xai",
+      "where": "report",
+      "any_of": [
+        "drusen|teo địa|geographic atrophy|xuất huyết|hemorrhage|hoàng điểm|macula"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Làm nổi bật vùng tổn thương (drusen, xuất huyết, teo địa) và đối chiếu giải phẫu.",
+      "source": "HMYT docs/du_an/amd.md"
+    }
+  ],
+  "improvements": [
+    "Tham khảo grassmann2018deep về external validation trên quần thể độc lập (KORA)."
+  ]
+}

@@ -11,3 +11,9 @@ __pycache__/
 Thumbs.db
 .ipynb_checkpoints/
 changed_files.txt
+# Đầu ra của scripts/review_project.py khi chạy ở gốc repo (không commit)
+/pr_body.md
+/review_report*.md
+/review_report*.json
+/review_reports/
+/bao_cao_review*.md

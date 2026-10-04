@@ -1,0 +1,110 @@
+{
+  "topic_id": "4.1",
+  "topic_slug": "may_day_nlp",
+  "group": 4,
+  "title": "Trích xuất tự động hoàn cảnh khởi phát bệnh Mày đay từ bệnh sử tự do",
+  "modalities": [
+    "nlp"
+  ],
+  "metric_set": "ner",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/may_day_nlp",
+  "source": "HMYT docs/du_an/may_day_nlp.md",
+  "dataset": "MIMIC-IV notes có nhắc dị ứng/mày đay — tự gán nhãn thủ công tập nhỏ",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "attention",
+    "lime",
+    "shap",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "botero2025natural",
+      "note": "NER dị ứng F1 = 0,80, sensitivity 75,73%"
+    },
+    {
+      "citekey": "diazochoa2025optimized",
+      "note": "NER + negation, fine-tuned BERT F1 = 0,84"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.ANNOTATION",
+      "title": "Gán nhãn thủ công có hướng dẫn (bắt buộc)",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "any",
+      "any_of": [
+        "gán nhãn|annotat|label.?studio|doccano|\\bbrat\\b|prodigy|annotation guideline"
+      ],
+      "severity": "major",
+      "suggestion": "Viết hướng dẫn gán nhãn, mô tả công cụ và số câu/ghi chú đã gán.",
+      "source": "HMYT docs/du_an/may_day_nlp.md"
+    },
+    {
+      "id": "T.BASELINE_NLP",
+      "title": "Baseline TF-IDF + SVM và NegEx rule-based",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "TfidfVectorizer",
+        "\\bSVC\\b|LinearSVC|SGDClassifier",
+        "negex|negation"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "2 baseline: TF-IDF + SVM cho NER/phân loại, NegEx cho phủ định.",
+      "source": "HMYT docs/du_an/may_day_nlp.md"
+    },
+    {
+      "id": "T.NEGATION",
+      "title": "Tích hợp phát hiện phủ định",
+      "milestone": "M3",
+      "criterion": "M3.proposed",
+      "where": "any",
+      "any_of": [
+        "negex|negation|phủ định|negspacy|pycontext"
+      ],
+      "severity": "major",
+      "suggestion": "Tích hợp negation detection vào pipeline đề xuất (ClinicalBERT/BioBERT + negation).",
+      "source": "HMYT docs/du_an/may_day_nlp.md"
+    },
+    {
+      "id": "T.NER_NEG_SEPARATE",
+      "title": "Đánh giá RIÊNG NER và negation detection",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "(NER|thực thể)[^\\n]{0,80}(negation|phủ định)|(negation|phủ định)[^\\n]{0,80}(F1|precision|recall)"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "2 bảng kết quả: NER (theo loại thực thể) và negation.",
+      "source": "HMYT docs/du_an/may_day_nlp.md"
+    },
+    {
+      "id": "T.PER_ENTITY",
+      "title": "Độ đo theo từng loại thực thể",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "loại thực thể|per.?entity|entity.?type|từng (loại )?thực thể|seqeval|classification_report"
+      ],
+      "severity": "minor",
+      "suggestion": "Báo cáo Precision/Recall/F1 cho từng loại yếu tố khởi phát.",
+      "source": "HMYT docs/du_an/may_day_nlp.md"
+    }
+  ],
+  "improvements": [
+    "Phân tích riêng các ca FN của yếu tố khởi phát nguy hiểm (trang đề tài).",
+    "MIMIC-IV notes cần credentialed access: không commit ghi chú gốc, không đưa ghi chú vào LLM trực tuyến công cộng (Phần VII)."
+  ]
+}

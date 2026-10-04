@@ -1,0 +1,67 @@
+{
+  "topic_id": "2.7",
+  "topic_slug": "iqa_fundus",
+  "group": 2,
+  "title": "Đánh giá chất lượng ảnh đáy mắt tự động (Image Quality Assessment)",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "multiclass",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/iqa_fundus",
+  "source": "HMYT docs/du_an/iqa_fundus.md",
+  "dataset": "EyeQ (dựa trên EyePACS, 28.792 ảnh, Good/Usable/Reject) hoặc subset",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "saliency"
+  ],
+  "xai_mandatory": true,
+  "benchmarks": [
+    {
+      "citekey": "khalid2024fgrnet",
+      "note": "FGR-Net — accuracy 89%/F1 87%, có giải thích"
+    },
+    {
+      "citekey": "perez2020lightweight",
+      "note": "Mô hình nhẹ smartphone, accuracy 0,911 (nhị phân)/0,856 (3 lớp)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.REJECT_REASON",
+      "title": "Giải thích VÌ SAO ảnh bị từ chối (mờ/thiếu sáng/nhiễu/che khuất)",
+      "milestone": "M4",
+      "criterion": "M4.xai",
+      "where": "report",
+      "any_of": [
+        "mờ|blur|thiếu sáng|underexpos|overexpos|illumination|nhiễu|artifact|che khuất|occlu"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Không chỉ trả nhãn gradable/ungradable: Grad-CAM + phân loại nguyên nhân từ chối cho từng ca.",
+      "source": "HMYT docs/du_an/iqa_fundus.md"
+    },
+    {
+      "id": "T.CONFUSION_FULL",
+      "title": "Confusion matrix đầy đủ (3×3 nếu dùng 3 lớp)",
+      "milestone": "M4",
+      "criterion": "M4.error",
+      "where": "code",
+      "any_of": [
+        "confusion_matrix|ConfusionMatrixDisplay"
+      ],
+      "severity": "major",
+      "suggestion": "Nhầm Usable↔Reject nguy hiểm hơn Good↔Usable — phân tích riêng ô này.",
+      "source": "HMYT docs/du_an/iqa_fundus.md"
+    }
+  ],
+  "improvements": [
+    "Nếu dùng 3 lớp Good/Usable/Reject: cân nhắc Ordinal Classification (trang đề tài).",
+    "Thảo luận vai trò so với cổng chất lượng rule-based ở tầng phần mềm (CS-4, ktpmud-book): mô hình nghiên cứu không thay thế cổng an toàn đó."
+  ]
+}

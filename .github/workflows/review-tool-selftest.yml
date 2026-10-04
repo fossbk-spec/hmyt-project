@@ -1,0 +1,40 @@
+name: Review tool self-test
+
+# Khi giảng viên sửa công cụ review hoặc cấu hình rubric/: kiểm tra cấu hình
+# hợp lệ (id check, tiêu chí, regex, tổng điểm), chạy bộ test, rồi chạy thử
+# review trên mọi bài nộp hiện có — tránh 1 lỗi JSON làm hỏng CI của cả lớp.
+on:
+  pull_request:
+    branches: [main]
+    paths: ["scripts/**", "rubric/**", ".github/workflows/review-*.yml"]
+  push:
+    branches: [main]
+    paths: ["scripts/**", "rubric/**", ".github/workflows/review-*.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Kiểm tra cấu hình rubric/
+        run: python scripts/review_project.py --self-test
+
+      - name: Bộ test của công cụ review
+        run: python -m unittest discover -s scripts/tests -v
+
+      - name: Chạy thử trên các bài nộp hiện có
+        run: |
+          python scripts/review_project.py --all --output review_all.md
+          cat review_all.md >> "$GITHUB_STEP_SUMMARY"

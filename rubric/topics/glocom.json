@@ -1,0 +1,97 @@
+{
+  "topic_id": "2.3",
+  "topic_slug": "glocom",
+  "group": 2,
+  "title": "Tự động đo tỷ lệ Cup-to-Disc (CDR) trên ảnh đáy mắt để tầm soát Glocôm",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": [
+    "segmentation",
+    "regression"
+  ],
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/glocom",
+  "source": "HMYT docs/du_an/glocom.md",
+  "dataset": "REFUGE Challenge (1.200 ảnh); RIM-ONE/DRISHTI-GS cho external validation",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "segmentation_map",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "pannu2025enhanced",
+      "note": "Modified ResUNet, Dice đĩa/lõm 0,972/0,872 (RIM-ONE)"
+    },
+    {
+      "citekey": "gao2024automated",
+      "note": "CDR tự động vs chuyên gia: Pearson r = 0,91"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.DISC_CUP_SEPARATE",
+      "title": "Dice/IoU báo cáo RIÊNG cho đĩa thị và lõm thị",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "(disc|đĩa thị)[^\\n]{0,60}(dice|iou)|(dice|iou)[^\\n]{0,60}(disc|đĩa thị)",
+        "(cup|lõm thị)[^\\n]{0,60}(dice|iou)|(dice|iou)[^\\n]{0,60}(cup|lõm thị)"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "Bảng kết quả tách 2 dòng Dice/IoU đĩa thị và lõm thị; thảo luận vì sao lõm thị khó hơn.",
+      "source": "HMYT docs/du_an/glocom.md"
+    },
+    {
+      "id": "T.CDR",
+      "title": "Tính tỷ lệ CDR từ mask phân vùng",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "\\bCDR\\b|cup.?to.?disc"
+      ],
+      "severity": "major",
+      "suggestion": "Tính vertical CDR từ mask đĩa/lõm thị và so với giá trị chuẩn/chuyên gia.",
+      "source": "HMYT docs/du_an/glocom.md"
+    },
+    {
+      "id": "T.UNET_BASELINE",
+      "title": "Baseline U-Net thô",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "u-?net"
+      ],
+      "severity": "minor",
+      "suggestion": "U-Net chuẩn làm mốc trước ResUNet cải tiến.",
+      "source": "HMYT docs/du_an/glocom.md"
+    },
+    {
+      "id": "T.EXTERNAL",
+      "title": "External validation trên RIM-ONE/DRISHTI-GS",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "RIM-?ONE|DRISHTI|ORIGA|external|ngoại kiểm"
+      ],
+      "severity": "minor",
+      "suggestion": "Huấn luyện trên REFUGE, đánh giá ngoài trên RIM-ONE hoặc DRISHTI-GS.",
+      "source": "HMYT docs/du_an/glocom.md"
+    }
+  ],
+  "improvements": [
+    "So sánh CDR tự động với chuyên gia bằng tương quan Pearson và biểu đồ Bland–Altman.",
+    "Đưa nhận định “Dice lõm thị thấp hơn đĩa thị phản ánh ranh giới mờ — thách thức lâm sàng thật” vào Thảo luận (trang đề tài)."
+  ]
+}

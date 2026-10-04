@@ -1,0 +1,81 @@
+{
+  "topic_id": "1.1",
+  "topic_slug": "suy_tim",
+  "group": 1,
+  "title": "Dự báo nguy cơ đợt cấp suy tim mất bù từ chuỗi thời gian sinh hiệu và cân nặng",
+  "modalities": [
+    "tabular",
+    "signal"
+  ],
+  "metric_set": "binary",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/suy_tim",
+  "source": "HMYT docs/du_an/suy_tim.md",
+  "dataset": "MIMIC-III/IV (chuỗi thời gian tim mạch) hoặc dữ liệu mô phỏng dựa trên registry công khai",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "shap",
+    "attention"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "maesecalvo2026predicti",
+      "note": "RF vs Logistic Regression, AUC 0,812 vs 0,686"
+    },
+    {
+      "citekey": "zhai2026explaina",
+      "note": "XGBoost AUC nội bộ 0,968 → AUC ngoại 0,718 (bài học external validation)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.LOGREG_BASELINE",
+      "title": "Baseline Logistic Regression đối chứng (bắt buộc theo trang đề tài)",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "LogisticRegression"
+      ],
+      "severity": "major",
+      "suggestion": "Huấn luyện Logistic Regression làm mốc đối chứng trước khi thử RF/XGBoost/mạng sâu.",
+      "source": "HMYT docs/du_an/suy_tim.md"
+    },
+    {
+      "id": "T.PREPROCESS_HF",
+      "title": "Điền khuyết (MICE/KNN, fit trên Train) hoặc windowing chuỗi thời gian",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "KNNImputer|IterativeImputer|SimpleImputer|\\bMICE\\b|miceforest",
+        "rolling\\(|sliding|window"
+      ],
+      "severity": "minor",
+      "suggestion": "Dữ liệu bảng: MICE/KNN Imputer fit chỉ trên Train. Chuỗi thời gian: chuẩn hóa cửa sổ, xử lý tần số lấy mẫu không đều.",
+      "source": "HMYT docs/du_an/suy_tim.md"
+    },
+    {
+      "id": "T.EXTERNAL_VALIDATION",
+      "title": "Thiết kế external validation (hoặc phân tích rõ giới hạn khi không có)",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "external|ngoại kiểm|kiểm định ngoài|validation cohort|eICU"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Trang đề tài yêu cầu external validation nếu có thể (vd eICU-CRD), hoặc ít nhất một mục phân tích giới hạn khái quát hóa — xem bài học AUC 0,968 → 0,718 của zhai2026explaina.",
+      "source": "HMYT docs/du_an/suy_tim.md"
+    }
+  ],
+  "improvements": [
+    "Kết hợp đặc trưng bảng + chuỗi thời gian (multimodal) — khoảng trống mà cả 4 bài khởi động chưa khai thác (khuyến nghị mở rộng của trang đề tài).",
+    "MIMIC cần credentialed access + DUA của PhysioNet: chỉ commit script trích xuất, không commit dữ liệu."
+  ]
+}

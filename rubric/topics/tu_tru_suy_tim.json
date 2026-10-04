@@ -1,0 +1,80 @@
+{
+  "topic_id": "3.1",
+  "topic_slug": "tu_tru_suy_tim",
+  "group": 3,
+  "title": "Gợi ý cá thể hóa phác đồ “Tứ trụ” cho người cao tuổi suy yếu mắc Suy tim",
+  "modalities": [
+    "tabular"
+  ],
+  "metric_set": "multilabel",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/tu_tru_suy_tim",
+  "source": "HMYT docs/du_an/tu_tru_suy_tim.md",
+  "dataset": "Trích xuất từ MIMIC-III/IV hoặc registry công khai có đủ EF/eGFR/Kali",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "shap"
+  ],
+  "benchmarks": [],
+  "checks": [
+    {
+      "id": "T.HARD_RULE_K",
+      "title": "Luật an toàn cứng: Kali > 5,5 mmol/L → chặn MRA/ARNI (không để ML quyết định)",
+      "milestone": "M3",
+      "criterion": "M3.proposed",
+      "where": "code",
+      "any_of": [
+        "(kali|potassium|serum_k)[^\\n]{0,50}5[.,]5|5[.,]5[^\\n]{0,50}(kali|potassium)"
+      ],
+      "severity": "major",
+      "suggestion": "Kiến trúc lai bắt buộc: lớp rule-based chặn cứng chống chỉ định tuyệt đối, chạy TRƯỚC/độc lập với ML.",
+      "source": "HMYT docs/du_an/tu_tru_suy_tim.md"
+    },
+    {
+      "id": "T.LOGREG_BASELINE",
+      "title": "Baseline Logistic Regression đối chứng (bắt buộc theo trang đề tài)",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "LogisticRegression"
+      ],
+      "severity": "major",
+      "suggestion": "Huấn luyện Logistic Regression làm mốc đối chứng trước khi thử RF/XGBoost/mạng sâu.",
+      "source": "HMYT docs/du_an/tu_tru_suy_tim.md"
+    },
+    {
+      "id": "T.PER_DRUG",
+      "title": "Đa độ đo theo TỪNG nhóm thuốc",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "từng nhóm thuốc|per.?drug|\\bMRA\\b|ARNI|SGLT2|beta.?blocker|chẹn beta"
+      ],
+      "severity": "minor",
+      "suggestion": "Báo cáo độ đo riêng cho từng trụ (ARNI/ACEi, chẹn beta, MRA, SGLT2i).",
+      "source": "HMYT docs/du_an/tu_tru_suy_tim.md"
+    },
+    {
+      "id": "T.SHAP_GUIDELINE",
+      "title": "SHAP đối chiếu khuyến cáo lâm sàng thật",
+      "milestone": "M4",
+      "criterion": "M4.xai",
+      "where": "report",
+      "any_of": [
+        "khuyến cáo|guideline|\\bESC\\b|\\bAHA\\b"
+      ],
+      "severity": "minor",
+      "suggestion": "Đối chiếu đặc trưng SHAP quan trọng với khuyến cáo điều trị suy tim hiện hành.",
+      "source": "HMYT docs/du_an/tu_tru_suy_tim.md"
+    }
+  ],
+  "improvements": [
+    "MIMIC cần credentialed access + DUA của PhysioNet: chỉ commit script trích xuất, không commit dữ liệu."
+  ]
+}

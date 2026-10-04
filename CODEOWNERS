@@ -10,4 +10,9 @@
 # không qua giảng viên duyệt riêng.
 /.github/       @ten-giang-vien
 /scripts/       @ten-giang-vien
+/rubric/        @ten-giang-vien
+/.agents/       @ten-giang-vien
+/.claude/       @ten-giang-vien
+/AGENTS.md      @ten-giang-vien
+/CLAUDE.md      @ten-giang-vien
 /CONTRIBUTING.md @ten-giang-vien

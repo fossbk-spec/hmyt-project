@@ -41,8 +41,14 @@ ghi đè hay xung đột với nhóm B.
    ```
    python scripts/validate_submission.py submissions/suy_tim_risk_dxai_nhom07
    ```
+   Sau đó **tự kiểm tra theo rubric** (khuyến nghị mạnh — chỉ cần Python 3,
+   không cài thêm gì; xem Mục 5):
+   ```
+   python scripts/review_project.py submissions/suy_tim_risk_dxai_nhom07
+   ```
 6. **Commit + push** lên fork của bạn, rồi **mở Pull Request** vào
-   `main` của `fossbk-spec/hmyt-project`.
+   `main` của `fossbk-spec/hmyt-project` — điền mẫu PR (có Biomedical
+   Reproducibility Checklist).
 7. Chờ CI chạy xanh (✅) — nếu đỏ (❌), đọc log lỗi, sửa, push tiếp lên
    cùng branch (PR tự cập nhật, không cần mở PR mới).
 8. Giảng viên/TA review nội dung và merge. Sau khi merge, bài nộp của nhóm
@@ -59,12 +65,15 @@ ghi đè hay xung đột với nhóm B.
   "group_code": "nhom07",
   "members": ["MSSV1", "MSSV2", "MSSV3"],
   "submitted_at": "2026-12-15",
+  "milestone": "final",
   "repo_link_optional": "https://github.com/<fork>/hmyt-project (nếu code chính nằm ở fork riêng, không copy hết vào đây)"
 }
 ```
 
 Trường bắt buộc: `topic_slug`, `topic_id`, `group_code`, `members`.
 `members` dùng **MSSV**, không dùng họ tên đầy đủ (xem Mục 3).
+`milestone` (tùy chọn: `m1`, `m2`, `m3`, `m4`, `final` — mặc định `final`) cho
+công cụ review biết chỉ đánh giá các tiêu chí đến mốc đó.
 
 ## 3. Quy tắc bắt buộc về quyền riêng tư (CI sẽ chặn nếu vi phạm)
 
@@ -84,6 +93,12 @@ Trường bắt buộc: `topic_slug`, `topic_id`, `group_code`, `members`.
 
 ## 4. Câu hỏi thường gặp
 
+**Check "Review Submission (rubric)" báo nhiều ❌/⚠️, có bị trừ điểm không?**
+Không trực tiếp — đó là kiểm tra tự động mang tính tư vấn (xem Mục 5). Điểm
+do giảng viên chấm theo rubric. Nhưng các mục ❌ thường trùng đúng chỗ bị
+trừ điểm, nên sửa trước khi nghiệm thu; nếu cho là dương tính giả, giải
+trình trong mô tả PR.
+
 **Nhóm em có thể sửa bài sau khi đã merge không?**
 Không tự sửa qua PR thường (branch protection chặn ghi đè thư mục nhóm
 khác nhưng cũp chặn cả việc bạn tự ý sửa thư mục của chính mình sau khi đã
@@ -96,3 +111,26 @@ Có — mỗi nhóm vẫn có thư mục riêng (`ma_nhom` khác nhau), không x
 **Sao không cho push thẳng vào `main`?**
 Vì `main` được bảo vệ (branch protection) — chỉ nhận thay đổi qua PR đã
 qua CI xanh, tránh 1 nhóm vô tình (hoặc cố ý) ghi đè bài của nhóm khác.
+
+## 5. Tự kiểm tra theo rubric và nâng cao chất lượng
+
+`scripts/review_project.py` đối chiếu bài nộp với
+[Khung Quản Lý & Rubric](https://fossbk-spec.github.io/hmyt-book/du_an_mon_hoc)
+và yêu cầu riêng của đề tài (`rubric/topics/<topic_slug>.json`). Công cụ chỉ
+**đọc** file (không chạy code của nhóm) và in báo cáo gồm:
+
+1. **Tóm tắt theo tiêu chí rubric** — 🟢/🟡/🔴 là *dự báo* dựa trên dấu hiệu
+   có/không, không phải điểm.
+2. **Vấn đề nghiêm trọng** — nghi vấn rò rỉ dữ liệu (scaler/SMOTE fit trước
+   khi chia tập, chia tập không theo bệnh nhân), dữ liệu định danh, trùng lặp
+   cao với bài khác/code minh họa.
+3. **Chi tiết** — từng tiêu chí kèm `file:dòng` làm bằng chứng.
+4. **Liêm chính** — PHI, giấy phép dữ liệu, trích dẫn truy vết được (citekey ∈
+   `.bib`, DOI có thật với `--online`), số liệu báo cáo khớp output của code.
+5. **Phương án nâng cao chất lượng** — Tầng 1 sửa ngay (❌), Tầng 2 lên mức
+   Xuất sắc (⚠️), Tầng 3 vượt rubric (hướng tới bài báo) + gợi ý riêng của đề tài.
+6. **Câu hỏi vấn đáp gợi ý** — luyện trước buổi bảo vệ.
+
+Tùy chọn hữu ích: `--milestone m1|m2|m3|m4|final`, `--online` (xác minh DOI
+qua Crossref, nhánh gd1–gd7 trên repo nhóm), `--output bao_cao_review.md`.
+**Không commit file báo cáo review vào thư mục nộp bài.**

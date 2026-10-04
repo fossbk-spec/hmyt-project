@@ -1,0 +1,108 @@
+{
+  "topic_id": "2.6",
+  "topic_slug": "edge_ai_da_benh_ly",
+  "group": 2,
+  "title": "Phân loại đa bệnh lý võng mạc đồng thời bằng mô hình Edge AI",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "multilabel",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/edge_ai_da_benh_ly",
+  "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md",
+  "dataset": "ODIR-5K (8 nhóm) kết hợp dữ liệu tự thu thập",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "arnob2025lightweight",
+      "note": "16,6M tham số + XAI, macro-F1 0,880"
+    },
+    {
+      "citekey": "rafi2026litefeatnet",
+      "note": "Tốc độ suy luận 4 ms"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.SIGMOID_MULTILABEL",
+      "title": "Đầu ra multi-label dùng sigmoid/BCE (không phải softmax)",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "sigmoid|BCEWithLogitsLoss|BCELoss|binary_crossentropy|MultiLabel"
+      ],
+      "severity": "major",
+      "suggestion": "Multi-label: sigmoid + BCEWithLogitsLoss, ngưỡng riêng từng nhãn.",
+      "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md"
+    },
+    {
+      "id": "T.NO_SOFTMAX_ONLY",
+      "title": "Không dùng softmax/CrossEntropy đơn thuần cho bài toán đa nhãn",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "CrossEntropyLoss\\(|categorical_crossentropy|softmax"
+      ],
+      "severity": "major",
+      "type": "forbid",
+      "unless_any": [
+        "sigmoid|BCEWithLogitsLoss|BCELoss|binary_crossentropy"
+      ],
+      "fail_status": "WARN",
+      "fail_detail": "Chỉ thấy softmax/CrossEntropy — mỗi ảnh có thể mắc nhiều bệnh cùng lúc.",
+      "suggestion": "Đổi sang sigmoid + BCE.",
+      "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md"
+    },
+    {
+      "id": "T.PER_LABEL",
+      "title": "F1/độ đo theo TỪNG bệnh lý",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "average\\s*=\\s*None|per.?label|từng nhãn|từng bệnh lý|classification_report|multilabel_confusion_matrix"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Báo cáo F1/Sensitivity/AUC cho từng bệnh lý + macro.",
+      "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md"
+    },
+    {
+      "id": "T.INFERENCE_TIME",
+      "title": "Đo thời gian suy luận thực tế trên phần cứng cụ thể (bắt buộc)",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "perf_counter|time\\.time\\(|latency|inference.?time|thời gian suy luận|\\bms\\b[^\\n]{0,15}(ảnh|image)|\\bFPS\\b|timeit"
+      ],
+      "severity": "major",
+      "suggestion": "Đo latency trung bình (ms/ảnh, sau warm-up) và ghi rõ phần cứng (CPU/GPU/Jetson/điện thoại).",
+      "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md"
+    },
+    {
+      "id": "T.QUANTIZATION",
+      "title": "Lượng hóa INT8/FP16 hoặc xuất ONNX/TFLite",
+      "milestone": "M3",
+      "criterion": "M3.proposed",
+      "where": "code",
+      "any_of": [
+        "quantiz|INT8|FP16|\\.half\\(\\)|tflite|onnx"
+      ],
+      "severity": "minor",
+      "suggestion": "Lượng hóa mô hình nhẹ và báo cáo đánh đổi độ chính xác ↔ tốc độ/kích thước.",
+      "source": "HMYT docs/du_an/edge_ai_da_benh_ly.md"
+    }
+  ],
+  "improvements": []
+}

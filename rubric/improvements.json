@@ -1,0 +1,258 @@
+{
+  "_comment": "Tầng 3 'Vượt rubric' của báo cáo review: chỉ gợi ý mục chưa thấy dấu hiệu (regex 'detect' không khớp code/báo cáo). 'modalities': signal | image | tabular | nlp | * ; 'topics' (tùy chọn): giới hạn theo topic_slug. 'ref' trỏ về chương sách HMYT hoặc mục của Khung quản lý — không trích dẫn tài liệu ngoài library.bib. Câu hỏi vấn đáp ('viva_questions') mặc định chỉ hiện khi kỹ thuật xuất hiện trong CODE; thêm \"where\": \"any\" để xét cả báo cáo.",
+  "items": [
+    {
+      "id": "IMP.REPEATED_CV",
+      "modalities": [
+        "*"
+      ],
+      "title": "Đánh giá lặp lại thay vì 1 lần chia tập",
+      "how": "Với cỡ mẫu nhỏ, 1 lần chia Train/Test dao động mạnh theo random_state. Dùng RepeatedStratifiedKFold (vd 5×10) hoặc nested CV (vòng trong chọn siêu tham số, vòng ngoài đánh giá), báo cáo mean ± SD kèm 95% CI.",
+      "detect": "RepeatedStratifiedKFold|RepeatedKFold|nested",
+      "ref": "Chương 4 — Stratified K-fold"
+    },
+    {
+      "id": "IMP.STAT_TEST",
+      "modalities": [
+        "*"
+      ],
+      "title": "Kiểm định thống kê khi so sánh mô hình",
+      "how": "Đừng kết luận “vượt trội” chỉ từ chênh lệch vài điểm %: dùng DeLong test cho 2 ROC-AUC trên cùng tập Test, McNemar cho 2 bộ dự đoán, hoặc bootstrap hiệu số độ đo kèm 95% CI.",
+      "detect": "delong|mcnemar|wilcoxon|ttest_rel|permutation_test",
+      "ref": "Chương 4 — Đánh giá mô hình"
+    },
+    {
+      "id": "IMP.THRESHOLD",
+      "modalities": [
+        "*"
+      ],
+      "title": "Chọn ngưỡng quyết định theo chi phí lâm sàng",
+      "how": "Ngưỡng 0,5 hiếm khi tối ưu khi FN nguy hiểm hơn FP. Chọn ngưỡng theo Youden J hoặc theo mục tiêu Sensitivity (vd ≥ 0,90) trên tập Validation, rồi báo cáo hiệu năng tại đúng ngưỡng vận hành trên Test.",
+      "detect": "youden|threshold|ngưỡng",
+      "ref": "Chương 4 — ROC-AUC, Sensitivity/Specificity"
+    },
+    {
+      "id": "IMP.DCA",
+      "modalities": [
+        "tabular",
+        "signal",
+        "image"
+      ],
+      "title": "Decision Curve Analysis (net benefit)",
+      "how": "Vẽ đường cong quyết định so sánh mô hình với chiến lược “can thiệp tất cả / không can thiệp ai” trên dải ngưỡng nguy cơ — chứng minh lợi ích lâm sàng, không chỉ độ chính xác thống kê.",
+      "detect": "decision.?curve|net.?benefit|dcurves"
+    },
+    {
+      "id": "IMP.SUBGROUP",
+      "modalities": [
+        "*"
+      ],
+      "title": "Phân tích hiệu năng theo nhóm con (fairness)",
+      "how": "Báo cáo độ đo riêng theo tuổi, giới, mức độ bệnh, thiết bị/cơ sở thu thập để phát hiện thiên vị thuật toán; nêu nhóm nào mô hình kém và giả thuyết nguyên nhân.",
+      "detect": "subgroup|fairness|nhóm con|theo giới|theo tuổi",
+      "ref": "Chương 1 — Y đức AI, thiên vị thuật toán"
+    },
+    {
+      "id": "IMP.EXTERNAL",
+      "modalities": [
+        "*"
+      ],
+      "title": "Kiểm định ngoài (external validation)",
+      "how": "Đánh giá trên một bộ dữ liệu/cơ sở khác hoặc chia theo thời gian (temporal split). Nếu không có dữ liệu ngoài, phân tích rõ dịch chuyển phân phối và giới hạn khái quát hóa.",
+      "detect": "external|ngoại kiểm|kiểm định ngoài|temporal split|eicu|rim-one|drishti"
+    },
+    {
+      "id": "IMP.UNCERTAINTY",
+      "modalities": [
+        "*"
+      ],
+      "title": "Định lượng bất định & cơ chế “từ chối dự đoán”",
+      "how": "MC Dropout, deep ensembles hoặc conformal prediction để mô hình biết khi nào không chắc chắn và chuyển ca cho bác sĩ — phù hợp triết lý hỗ trợ (không thay thế) quyết định lâm sàng.",
+      "detect": "conformal|mc.?dropout|mapie|uncertainty|bất định"
+    },
+    {
+      "id": "IMP.ROBUST_SIGNAL",
+      "modalities": [
+        "signal"
+      ],
+      "title": "Kiểm tra độ bền với nhiễu tín hiệu",
+      "how": "Thêm nhiễu có kiểm soát (baseline wander, EMG, nhiễu điện lưới, mất 1 chuyển đạo) vào tập Test và báo cáo độ suy giảm hiệu năng.",
+      "detect": "robustness|độ bền|noise.?inject|thêm nhiễu|add_noise"
+    },
+    {
+      "id": "IMP.ROBUST_IMAGE",
+      "modalities": [
+        "image"
+      ],
+      "title": "Kiểm tra độ bền ảnh & test-time augmentation",
+      "how": "Đánh giá khi thay đổi độ sáng/độ mờ/nén JPEG hoặc ảnh từ thiết bị chụp khác; thử test-time augmentation và báo cáo độ ổn định dự đoán.",
+      "detect": "robustness|độ bền|test.?time.?aug|\\btta\\b|corrupt"
+    },
+    {
+      "id": "IMP.XAI_QUANT",
+      "modalities": [
+        "image",
+        "signal"
+      ],
+      "title": "Đánh giá định lượng XAI",
+      "how": "Không chỉ “nhìn hình” Grad-CAM: đo deletion/insertion AUC hoặc pointing game so với vùng tổn thương đã chú thích; kiểm tra sanity check (ngẫu nhiên hóa trọng số → bản đồ phải thay đổi).",
+      "detect": "deletion|insertion|pointing.?game|faithfulness|sanity.?check",
+      "ref": "Chương 8 — Grad-CAM"
+    },
+    {
+      "id": "IMP.XAI_TAB",
+      "modalities": [
+        "tabular"
+      ],
+      "title": "SHAP sâu hơn: dependence plot & độ ổn định",
+      "how": "Vẽ SHAP dependence plot cho 2–3 đặc trưng quan trọng nhất, đối chiếu ngưỡng sinh lý/lâm sàng; kiểm tra xếp hạng đặc trưng có ổn định qua các fold CV hay không.",
+      "detect": "dependence_plot|shap\\.plots\\.scatter|stability of|độ ổn định (của )?(xếp hạng|shap)"
+    },
+    {
+      "id": "IMP.NLP_ANNOT",
+      "modalities": [
+        "nlp"
+      ],
+      "title": "Chất lượng nhãn & khử định danh văn bản",
+      "how": "Viết hướng dẫn gán nhãn, cho 2 người gán độc lập một phần dữ liệu và báo cáo Cohen's kappa; kiểm tra khử định danh trước khi xử lý — tuyệt đối không đưa ghi chú lâm sàng thật vào LLM trực tuyến (Phần VII).",
+      "detect": "kappa|inter.?annotator|cohen|deid|khử định danh"
+    },
+    {
+      "id": "IMP.REPORTING_GUIDELINE",
+      "modalities": [
+        "*"
+      ],
+      "title": "Đối chiếu checklist báo cáo chuẩn quốc tế",
+      "how": "Điền checklist báo cáo cho nghiên cứu mô hình dự báo lâm sàng (TRIPOD+AI) hoặc AI ảnh y tế (CLAIM) làm phụ lục — tra bản chính thức trên trang EQUATOR Network, không chép lại từ nguồn thứ cấp.",
+      "detect": "tripod|claim checklist|equator"
+    },
+    {
+      "id": "IMP.MODEL_CARD",
+      "modalities": [
+        "*"
+      ],
+      "title": "Model Card cho mô hình",
+      "how": "1 trang mô tả: mục đích sử dụng dự kiến, dữ liệu huấn luyện, hiệu năng theo nhóm con, hạn chế, cảnh báo “chỉ phục vụ nghiên cứu — không dùng chẩn đoán”.",
+      "detect": "model.?card"
+    },
+    {
+      "id": "IMP.ONE_COMMAND",
+      "modalities": [
+        "*"
+      ],
+      "title": "Pipeline 1 lệnh + cấu hình + checksum dữ liệu",
+      "how": "Makefile/run_all.sh chạy từ dữ liệu thô → bảng/hình trong báo cáo; siêu tham số trong config.yaml; script tải dữ liệu kiểm tra SHA-256 để chắc chắn đúng phiên bản dataset.",
+      "detect": "makefile|run_all|sha256|checksum|config\\.ya?ml"
+    },
+    {
+      "id": "IMP.LEAK_TEST",
+      "modalities": [
+        "*"
+      ],
+      "title": "Unit test tự động cho bất biến chống rò rỉ",
+      "how": "pytest kiểm tra: tập bệnh nhân Train ∩ Test = ∅, scaler/imputer chỉ fit trên Train, SMOTE không chạm Test — chạy bằng GitHub Actions trong repo nhóm mỗi lần push.",
+      "detect": "pytest|def test_|unittest"
+    },
+    {
+      "id": "IMP.ENV",
+      "modalities": [
+        "*"
+      ],
+      "title": "Đóng gói môi trường",
+      "how": "Dockerfile hoặc environment.yml + lockfile để giảng viên chạy lại 100% trên máy khác; ghi phần cứng và thời gian chạy dự kiến.",
+      "detect": "dockerfile|environment\\.ya?ml|poetry\\.lock|uv\\.lock|conda-lock"
+    },
+    {
+      "id": "IMP.HPO",
+      "modalities": [
+        "*"
+      ],
+      "title": "Tối ưu siêu tham số có hệ thống",
+      "how": "Optuna/Bayesian search trên tập Validation (không bao giờ trên Test), log mọi trial lên W&B; báo cáo không gian tìm kiếm và cấu hình tốt nhất.",
+      "detect": "optuna|hyperopt|bayes.?search|sweep",
+      "ref": "Chương 7 — Tinh chỉnh siêu tham số"
+    },
+    {
+      "id": "IMP.EDGE",
+      "modalities": [
+        "image"
+      ],
+      "title": "Đo chi phí triển khai (latency, kích thước, lượng tử hóa)",
+      "how": "Đo thời gian suy luận/ảnh và kích thước mô hình trên phần cứng cụ thể; thử ONNX/TFLite và lượng tử hóa INT8/FP16, báo cáo đánh đổi độ chính xác.",
+      "detect": "onnx|tflite|quantiz|latency|inference.?time|thời gian suy luận"
+    },
+    {
+      "id": "IMP.DEMO",
+      "modalities": [
+        "*"
+      ],
+      "title": "Demo tương tác cho buổi bảo vệ",
+      "how": "Gradio/Streamlit nhận 1 mẫu đầu vào → dự đoán + giải thích XAI, kèm cảnh báo “chỉ phục vụ nghiên cứu”; chỉ dùng dữ liệu công khai/mô phỏng.",
+      "detect": "gradio|streamlit"
+    },
+    {
+      "id": "IMP.CLINICIAN",
+      "modalities": [
+        "*"
+      ],
+      "title": "Ý kiến chuyên gia lâm sàng cho ca lỗi",
+      "how": "Nhờ bác sĩ/chuyên gia xem 10–20 ca dự đoán sai kèm XAI, ghi nhận mức đồng thuận và đưa nhận định vào mục Thảo luận.",
+      "detect": "ý kiến (của )?(bác sĩ|chuyên gia)|clinician review|expert review|chuyên gia (đánh giá|nhận xét|xem)"
+    }
+  ],
+  "viva_questions": [
+    {
+      "detect": "StandardScaler|MinMaxScaler|RobustScaler",
+      "question": "Vì sao chỉ được `fit` scaler trên tập Train? Nếu fit trên toàn bộ dữ liệu thì độ đo nào bị thổi phồng và vì sao?"
+    },
+    {
+      "detect": "SMOTE|ADASYN|RandomOverSampler",
+      "question": "SMOTE sinh mẫu tổng hợp như thế nào? Vì sao áp dụng SMOTE trước khi chia CV-fold lại làm kết quả lạc quan giả tạo?"
+    },
+    {
+      "detect": "GroupKFold|GroupShuffleSplit|StratifiedGroupKFold|strat_fold|patient_id",
+      "question": "Vì sao phải chia tập theo bệnh nhân thay vì theo bản ghi/ảnh? Cho ví dụ cụ thể trong dữ liệu của nhóm."
+    },
+    {
+      "detect": "average_precision|PR-AUC|AUPRC|precision_recall_curve",
+      "question": "Với tỷ lệ dương tính trong dữ liệu của nhóm, PR-AUC hay ROC-AUC phản ánh tốt hơn hiệu năng lâm sàng? Vì sao?"
+    },
+    {
+      "detect": "\\bshap\\b",
+      "question": "Giải thích ý nghĩa 1 điểm trên SHAP beeswarm của đặc trưng quan trọng nhất. SHAP có cho biết quan hệ nhân quả không?"
+    },
+    {
+      "detect": "grad.?cam|GradCAM",
+      "question": "Grad-CAM được tính từ lớp nào của mạng? Vì sao bản đồ nhiệt thường thô, và nhóm kiểm chứng nó khớp giải phẫu bằng cách nào?"
+    },
+    {
+      "detect": "Dropout|EarlyStopping|early_stopping|weight_decay",
+      "question": "Dấu hiệu nào trên đồ thị loss cho thấy quá khớp, và từng kỹ thuật regularization nhóm dùng tác động lên đâu?"
+    },
+    {
+      "detect": "bootstrap|95% CI|khoảng tin cậy",
+      "question": "95% CI bootstrap của nhóm được tính với bao nhiêu lần lặp, lấy mẫu lại ở mức bản ghi hay bệnh nhân? Khác biệt giữa hai cách là gì?"
+    },
+    {
+      "detect": "LogisticRegression",
+      "question": "Chuyển hệ số Logistic Regression thành Odds Ratio thế nào? Diễn giải OR của 1 đặc trưng trong mô hình của nhóm."
+    },
+    {
+      "detect": "calibration|brier",
+      "question": "Mô hình AUC cao nhưng calibration kém gây hậu quả gì khi bác sĩ dùng xác suất dự báo?"
+    },
+    {
+      "detect": "class_weight|focal|imbalance|mất cân bằng",
+      "question": "Nhóm xử lý mất cân bằng nhãn bằng cách nào, và vì sao chọn cách đó thay vì các phương án khác?",
+      "where": "any"
+    },
+    {
+      "detect": "\\bSVC\\(|\\bSVR\\(",
+      "question": "Kernel trick của SVM hoạt động thế nào và nhóm chọn kernel/C/gamma bằng quy trình nào để tránh rò rỉ?"
+    },
+    {
+      "detect": "\\bPCA\\(|FastICA\\(|\\bUMAP\\(|\\bTSNE\\(",
+      "question": "Giảm chiều được fit trên tập nào? Nếu chỉ dùng để trực quan hóa, có ảnh hưởng tới đánh giá mô hình không?"
+    }
+  ]
+}

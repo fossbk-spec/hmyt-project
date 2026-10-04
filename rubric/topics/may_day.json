@@ -1,0 +1,76 @@
+{
+  "topic_id": "2.1",
+  "topic_slug": "may_day",
+  "group": 2,
+  "title": "Phân vùng và đo lường sẩn phù trên ảnh da hỗ trợ quản lý bệnh Mày đay",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "segmentation",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/may_day",
+  "source": "HMYT docs/du_an/may_day.md",
+  "dataset": "Ảnh tự thu thập có vật đối chuẩn kích thước, hoặc bộ Dermoscopy mã nguồn mở",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "gradcam",
+    "segmentation_map",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "gomes2024deeplearning",
+      "note": "Tiền lệ kỹ thuật gần nhất (Skin Prick Test), segmentation accuracy 85,88%"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.REF_OBJECT",
+      "title": "Vật đối chuẩn kích thước để quy đổi pixel → cm²",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "any",
+      "any_of": [
+        "thước|ruler|cm²|cm2|mm/pixel|pixel[^\\n]{0,20}(cm|mm)|vật đối chuẩn|color.?card"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Nếu tự thu thập ảnh, bắt buộc có thước/color card trong khung hình ngay từ đầu (không bổ sung sau được).",
+      "source": "HMYT docs/du_an/may_day.md"
+    },
+    {
+      "id": "T.COLOR_HAIR",
+      "title": "Chuẩn hóa ánh sáng/màu sắc, xử lý nhiễu lông/tóc",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "color.?(constancy|norm)|white.?balance|gray.?world|shades.?of.?gray|CLAHE",
+        "hair|dullrazor|inpaint"
+      ],
+      "severity": "minor",
+      "suggestion": "Chuẩn hóa màu (Shades of Gray/Gray World), loại lông/tóc (DullRazor + inpainting), augmentation theo biến thiên góc chụp.",
+      "source": "HMYT docs/du_an/may_day.md"
+    },
+    {
+      "id": "T.EXPERT_AGREEMENT",
+      "title": "Đối chiếu điểm số tự động với đánh giá chuyên gia",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "krippendorff|chuyên gia|expert|đồng thuận|inter.?rater|UAS"
+      ],
+      "severity": "minor",
+      "suggestion": "So sánh với đánh giá của chuyên gia (vd Krippendorff alpha như maccarthy2024auas).",
+      "source": "HMYT docs/du_an/may_day.md"
+    }
+  ],
+  "improvements": [
+    "Y văn trực tiếp khan hiếm: mở rộng tìm kiếm sang dermoscopy/đo diện tích tổn thương da bằng CV nói chung để đủ ≥10 bài (trang đề tài)."
+  ]
+}
