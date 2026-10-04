@@ -62,26 +62,31 @@
   "expected_files": [
     {
       "pattern": "(^|/)1_eda\\.ipynb$",
+      "name": "1_eda.ipynb",
       "title": "Buổi 1 — notebook EDA",
       "milestone": "M0"
     },
     {
       "pattern": "(^|/)2_baseline\\.ipynb$",
+      "name": "2_baseline.ipynb",
       "title": "Buổi 2 — notebook Baseline",
       "milestone": "M0"
     },
     {
       "pattern": "(^|/)3_improvement\\.ipynb$",
+      "name": "3_improvement.ipynb",
       "title": "Buổi 3 — notebook SMOTE & cải tiến",
       "milestone": "M0"
     },
     {
       "pattern": "(^|/)4_xai\\.ipynb$",
+      "name": "4_xai.ipynb",
       "title": "Buổi 4 — notebook SHAP",
       "milestone": "M0"
     },
     {
       "pattern": "shap_summary[\\w-]*\\.(png|jpg|svg)$",
+      "name": "shap_summary.png",
       "title": "Buổi 4 — hình shap_summary",
       "milestone": "M0"
     }

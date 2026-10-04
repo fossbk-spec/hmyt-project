@@ -45,7 +45,9 @@ Thêm 1 phần tử vào `checks` của `topics/<slug>.json`:
 Các trường cấp hồ sơ: `modalities` (`signal`/`image`/`tabular`/`nlp`),
 `metric_set` (`binary`/`multiclass`/`multilabel`/`segmentation`/`ner`/`regression`
 hoặc danh sách), `split.one_row_per_patient`, `xai_expected` (khóa trong
-`XAI_METHODS`), `xai_mandatory`, `expected_files`, `reference_code_urls`
+`XAI_METHODS`), `xai_mandatory`, `expected_files` (mỗi mục: `pattern` = regex
+đường dẫn dùng để kiểm tra, `title` + `name` = mô tả và tên file hiển thị cho
+sinh viên — regex không bao giờ hiện trong báo cáo, `milestone`), `reference_code_urls`
 (code minh họa công khai để so trùng lặp khi chạy `--online`),
 `overrides.min_references`, `overrides.tracking_optional`, `overrides.report_sections`.
 

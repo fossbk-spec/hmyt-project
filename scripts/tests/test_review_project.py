@@ -185,6 +185,13 @@ class TopicRequirementTest(unittest.TestCase):
         self.assertEqual(f.status, rp.FAIL)
         self.assertIn("Accuracy", f.detail)
 
+    def test_missing_deliverables_are_human_readable(self):
+        f = finding(rp.review_folder(SAMPLE, opts(), CONFIG), "S.TOPIC_FILES")
+        self.assertEqual(f.status, rp.WARN)
+        self.assertIn("1_eda.ipynb", f.detail)
+        self.assertNotIn("(^|/)", f.detail)
+        self.assertNotIn("\\.", f.detail)
+
     def test_milestone_gating(self):
         s = Sub(self.tmp, "3.2", "sa_sut_tri_tue")
         r = s.review(milestone="m1")

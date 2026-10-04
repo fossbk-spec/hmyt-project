@@ -1203,7 +1203,8 @@ def c_topic_files(ctx):
         return F(ctx, "S.TOPIC_FILES", PASS, "info", f"Đủ {len(expected)} sản phẩm bàn giao.")
     sev = "major" if any(e.get("severity") == "major" for e in missing) else "minor"
     return F(ctx, "S.TOPIC_FILES", WARN, sev,
-             "Thiếu: " + "; ".join(f"{e['title']} (`{e['pattern']}`)" for e in missing),
+             "Thiếu: " + "; ".join(f"{e['title']} (`{e['name']}`)" if e.get("name") else e["title"]
+                                   for e in missing),
              suggestion="Đặt tên/tách file đúng sản phẩm bàn giao trong hướng dẫn đề tài để GV đối chiếu nhanh.")
 
 
@@ -2625,6 +2626,8 @@ def self_test(rubric_dir: Path = RUBRIC_DIR) -> list[str]:
                 re.compile(ef["pattern"])
             except (re.error, KeyError) as e:
                 errors.append(f"topics/{slug}.json: expected_files lỗi: {e}")
+            if "title" not in ef or not isinstance(ef.get("name", ""), str):
+                errors.append(f"topics/{slug}.json: expected_files cần `title` (và `name` dạng chuỗi nếu có)")
     for it in improvements.get("items", []) + improvements.get("viva_questions", []):
         try:
             re.compile(it.get("detect", ""))
