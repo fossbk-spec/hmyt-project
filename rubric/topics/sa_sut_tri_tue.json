@@ -1,0 +1,87 @@
+{
+  "topic_id": "3.2",
+  "topic_slug": "sa_sut_tri_tue",
+  "group": 3,
+  "title": "Xử lý dữ liệu khuyết thang điểm nhận thức (MMSE/MoCA) trong sàng lọc Sa sút trí tuệ",
+  "modalities": [
+    "tabular"
+  ],
+  "metric_set": "binary",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/sa_sut_tri_tue",
+  "source": "HMYT docs/du_an/sa_sut_tri_tue.md",
+  "dataset": "ADNI hoặc OASIS",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "shap"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "aracri2025bridging",
+      "note": "So sánh 5 phương pháp impute × 3 classifier — MICE tốt nhất cho RF/LR (0,76/0,81)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.MISSINGNESS",
+      "title": "Trực quan hóa cơ chế khuyết (MCAR/MAR/MNAR) trước khi chọn impute",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "any",
+      "any_of": [
+        "missingno|msno\\.|MCAR|\\bMAR\\b|MNAR|isnull\\(\\)\\.(sum|mean)|isna\\(\\)\\.(sum|mean)"
+      ],
+      "severity": "major",
+      "suggestion": "Vẽ ma trận missingness (thư viện missingno) và lập luận cơ chế khuyết — bắt buộc trước khi chọn phương pháp impute.",
+      "source": "HMYT docs/du_an/sa_sut_tri_tue.md"
+    },
+    {
+      "id": "T.TWO_IMPUTERS",
+      "title": "Thử ≥ 2 phương pháp impute (mean/median baseline + MICE/kNN)",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "SimpleImputer|strategy\\s*=\\s*['\\\"](mean|median)|fillna\\([^)\\n]*(mean|median)",
+        "KNNImputer",
+        "IterativeImputer|\\bMICE\\b|miceforest|missforest"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "Mean/median làm baseline, MICE/kNN làm phương pháp chính — fit imputer CHỈ trên Train.",
+      "source": "HMYT docs/du_an/sa_sut_tri_tue.md"
+    },
+    {
+      "id": "T.DOWNSTREAM_COMPARE",
+      "title": "So sánh hiệu năng downstream giữa các chiến lược impute (ablation tự nhiên)",
+      "milestone": "M3",
+      "criterion": "M3.ablation",
+      "where": "report",
+      "any_of": [
+        "(so sánh|compare)[^\\n]{0,60}(impute|điền khuyết)|(impute|điền khuyết)[^\\n]{0,60}(so sánh|ablation|compar)|chiến lược (impute|điền khuyết)"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Bảng: chiến lược impute × classifier → độ đo phân loại MCI/Dementia.",
+      "source": "HMYT docs/du_an/sa_sut_tri_tue.md"
+    },
+    {
+      "id": "T.ARTIFICIAL_NORMALCY",
+      "title": "Kiểm tra “Artificial Normalcy” — impute có dịch phân phối về gần ranh giới không",
+      "milestone": "M4",
+      "criterion": "M4.xai",
+      "where": "report",
+      "any_of": [
+        "artificial normalcy|dịch chuyển phân phối|distribution shift|ranh giới quyết định"
+      ],
+      "severity": "minor",
+      "suggestion": "Dùng SHAP xem đặc trưng bị impute có bị mô hình dùng quá mức không.",
+      "source": "HMYT docs/du_an/sa_sut_tri_tue.md"
+    }
+  ],
+  "improvements": []
+}

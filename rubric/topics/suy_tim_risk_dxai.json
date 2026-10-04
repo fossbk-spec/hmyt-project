@@ -1,0 +1,275 @@
+{
+  "topic_id": "3.4",
+  "topic_slug": "suy_tim_risk_dxai",
+  "group": 3,
+  "title": "Phân tầng nguy cơ tử vong Suy tim từ dữ liệu bảng (phiên bản CẤP TỐC)",
+  "modalities": [
+    "tabular"
+  ],
+  "metric_set": "binary",
+  "rubric": "lab_3_4",
+  "track": "accelerated",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/suy_tim_risk_dxai",
+  "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md",
+  "dataset": "Heart Failure Clinical Records (UCI/Kaggle) — 299 bệnh nhân, 13 cột",
+  "split": {
+    "one_row_per_patient": true,
+    "note": "299 dòng = 299 bệnh nhân độc lập (Lab manual §0) — chia 80/20 stratified là hợp lệ."
+  },
+  "xai_expected": [
+    "shap"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "chicco2020machine",
+      "note": "Random Forest — Accuracy 74,0%, MCC 0,384"
+    },
+    {
+      "citekey": "ishaq2021improving",
+      "note": "SMOTE + Extra Trees — Accuracy 92,6%"
+    }
+  ],
+  "overrides": {
+    "min_references": 2,
+    "tracking_optional": true,
+    "report_sections": [
+      [
+        "Đặt vấn đề",
+        "đặt vấn đề|giới thiệu|introduction"
+      ],
+      [
+        "Y văn",
+        "y văn|tổng quan|related|literature"
+      ],
+      [
+        "Phương pháp",
+        "phương pháp|method"
+      ],
+      [
+        "Kết quả",
+        "kết quả|results?"
+      ],
+      [
+        "XAI",
+        "xai|shap|khả năng giải thích|giải thích"
+      ],
+      [
+        "Hạn chế",
+        "hạn chế|limitation"
+      ]
+    ]
+  },
+  "expected_files": [
+    {
+      "pattern": "(^|/)1_eda\\.ipynb$",
+      "title": "Buổi 1 — notebook EDA",
+      "milestone": "M0"
+    },
+    {
+      "pattern": "(^|/)2_baseline\\.ipynb$",
+      "title": "Buổi 2 — notebook Baseline",
+      "milestone": "M0"
+    },
+    {
+      "pattern": "(^|/)3_improvement\\.ipynb$",
+      "title": "Buổi 3 — notebook SMOTE & cải tiến",
+      "milestone": "M0"
+    },
+    {
+      "pattern": "(^|/)4_xai\\.ipynb$",
+      "title": "Buổi 4 — notebook SHAP",
+      "milestone": "M0"
+    },
+    {
+      "pattern": "shap_summary[\\w-]*\\.(png|jpg|svg)$",
+      "title": "Buổi 4 — hình shap_summary",
+      "milestone": "M0"
+    }
+  ],
+  "reference_code_urls": [
+    "https://fossbk-spec.github.io/hmyt-book/labs_chuyen_de/ch02_suy_tim_risk_dxai/1_eda.ipynb",
+    "https://fossbk-spec.github.io/hmyt-book/labs_chuyen_de/ch02_suy_tim_risk_dxai/2_baseline.ipynb",
+    "https://fossbk-spec.github.io/hmyt-book/labs_chuyen_de/ch02_suy_tim_risk_dxai/3_improvement.ipynb",
+    "https://fossbk-spec.github.io/hmyt-book/labs_chuyen_de/ch02_suy_tim_risk_dxai/4_xai.ipynb"
+  ],
+  "checks": [
+    {
+      "id": "T.STRATIFY",
+      "title": "Chia 80/20 giữ tỷ lệ nhãn (stratify)",
+      "milestone": "M2",
+      "criterion": {
+        "lab_3_4": "L1",
+        "standard": "M2.leakage"
+      },
+      "where": "code",
+      "any_of": [
+        "stratify\\s*=|StratifiedKFold|StratifiedShuffleSplit"
+      ],
+      "severity": "major",
+      "suggestion": "`train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)`.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.BASELINE_LR_RF",
+      "title": "Baseline Logistic Regression + Random Forest (tái lập chicco2020machine)",
+      "milestone": "M2",
+      "criterion": {
+        "lab_3_4": "L2",
+        "standard": "M2.baseline"
+      },
+      "where": "code",
+      "any_of": [
+        "LogisticRegression",
+        "RandomForestClassifier"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "Huấn luyện cả LogisticRegression và RandomForestClassifier.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.MCC",
+      "title": "Đo Accuracy, MCC, F1 trên tập Test (Buổi 2)",
+      "milestone": "M2",
+      "criterion": {
+        "lab_3_4": "L2",
+        "standard": "M4.metrics"
+      },
+      "where": "any",
+      "any_of": [
+        "matthews_corrcoef|\\bMCC\\b"
+      ],
+      "severity": "major",
+      "case_sensitive": true,
+      "suggestion": "Thêm `matthews_corrcoef` — độ đo chính của bài gốc, phù hợp dữ liệu mất cân bằng.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.CMP_CHICCO",
+      "title": "Đối chiếu kết quả baseline với chicco2020machine (74,0% / MCC 0,384) và giải thích độ lệch",
+      "milestone": "M4",
+      "criterion": {
+        "lab_3_4": "L2",
+        "standard": "FINAL.paper"
+      },
+      "where": "report",
+      "any_of": [
+        "chicco"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Đặt số liệu của nhóm cạnh bài gốc và phân tích vì sao lệch (tập đặc trưng, số lần lặp, cách chia).",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.SMOTE",
+      "title": "SMOTE để cân bằng nhãn DEATH_EVENT (Buổi 3)",
+      "milestone": "M3",
+      "criterion": {
+        "lab_3_4": "L3",
+        "standard": "M3.proposed"
+      },
+      "where": "code",
+      "any_of": [
+        "SMOTE"
+      ],
+      "severity": "major",
+      "case_sensitive": true,
+      "suggestion": "Áp dụng SMOTE (imbalanced-learn) chỉ trên Train.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.ENSEMBLE_AFTER_SMOTE",
+      "title": "Extra Trees (hoặc RF/Gradient Boosting) trên dữ liệu đã SMOTE",
+      "milestone": "M3",
+      "criterion": {
+        "lab_3_4": "L3",
+        "standard": "M3.proposed"
+      },
+      "where": "code",
+      "any_of": [
+        "ExtraTreesClassifier|GradientBoostingClassifier|RandomForestClassifier"
+      ],
+      "severity": "minor",
+      "suggestion": "Huấn luyện Extra Trees trên Train đã SMOTE, đánh giá trên Test gốc.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.SMOTE_VS_NO",
+      "title": "Bảng so sánh Có SMOTE vs Không SMOTE (sản phẩm Buổi 3)",
+      "milestone": "M3",
+      "criterion": {
+        "lab_3_4": "L3",
+        "standard": "M3.ablation"
+      },
+      "where": "report",
+      "any_of": [
+        "không SMOTE|no SMOTE|without SMOTE|w/o SMOTE|có[^\\n]{0,10}SMOTE[^\\n]{0,30}không"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Bảng cùng mô hình, cùng tập Test: có SMOTE vs không SMOTE.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.CMP_ISHAQ",
+      "title": "Đối chiếu với ishaq2021improving (92,6%) và giải thích nếu không tiệm cận",
+      "milestone": "M4",
+      "criterion": {
+        "lab_3_4": "L3",
+        "standard": "FINAL.paper"
+      },
+      "where": "report",
+      "any_of": [
+        "ishaq"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Nếu không đạt 92,6%, phân tích nguyên nhân (vd bẫy CV sau SMOTE) thay vì tinh chỉnh để “đuổi” con số.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.SHAP_SUMMARY",
+      "title": "Vẽ `shap.summary_plot` (Buổi 4)",
+      "milestone": "M4",
+      "criterion": {
+        "lab_3_4": "L4",
+        "standard": "M4.xai"
+      },
+      "where": "code",
+      "any_of": [
+        "summary_plot|shap\\.plots\\.(beeswarm|bar)"
+      ],
+      "severity": "major",
+      "suggestion": "`shap.TreeExplainer(model)` → `shap.summary_plot(shap_values, X_test)`.",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    },
+    {
+      "id": "T.SHAP_CLINICAL",
+      "title": "Đối chiếu SHAP với Serum Creatinine & Ejection Fraction",
+      "milestone": "M4",
+      "criterion": {
+        "lab_3_4": "L4",
+        "standard": "M4.xai"
+      },
+      "where": "report",
+      "any_of": [
+        "serum.?creatinine|creatinine",
+        "ejection.?fraction|\\bEF\\b"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "Viết đoạn bình luận: 2 biến này có ở nhóm quan trọng nhất không; nếu không, lý giải (vd ảnh hưởng của SMOTE, biến `time`).",
+      "source": "HMYT docs/du_an/suy_tim_risk_dxai.md + suy_tim_risk_dxai_lab.md"
+    }
+  ],
+  "improvements": [
+    "Mở rộng/đổi hướng so với case study minh họa Chương 2 (đổi thuật toán, validate chéo, phân tích sâu hơn) — copy nguyên notebook minh họa bị coi là không hoàn thành yêu cầu (trang đề tài).",
+    "Phân tích vai trò biến `time` (thời gian theo dõi): không biết trước tại thời điểm nhập viện → nguy cơ rò rỉ thời gian; so sánh mô hình có/không `time` (xem `submissions/suy_tim_risk_dxai_vidumau`, Mục 4.4).",
+    "Không “đuổi” con số 92,6%: nếu CV trên dữ liệu đã SMOTE cao hơn Test thật, giải thích bẫy “CV sau SMOTE” (ví dụ minh họa, Mục 4.3)."
+  ],
+  "viva_questions": [
+    "Biến `time` có biết trước tại thời điểm nhập viện không? Dùng nó làm đặc trưng đầu vào có hợp lý về mặt lâm sàng?",
+    "Vì sao SMOTE + Extra Trees không chắc chắn tốt hơn Random Forest không SMOTE trên tập Test giữ nguyên phân bố?"
+  ]
+}

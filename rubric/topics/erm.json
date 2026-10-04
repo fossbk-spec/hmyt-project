@@ -1,0 +1,47 @@
+{
+  "topic_id": "2.5",
+  "topic_slug": "erm",
+  "group": 2,
+  "title": "Phát hiện Màng trước võng mạc (ERM) qua ảnh đáy mắt hoặc OCT",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "binary",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/erm",
+  "source": "HMYT docs/du_an/erm.md",
+  "dataset": "Ảnh đáy mắt tự thu thập (dữ liệu công khai khan hiếm) hoặc OCT công khai",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "ayhan2024interpretable",
+      "note": "OCT — ERM nhỏ khó phát hiện nhất (AUC 0,92 vs 0,99)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.ERM_SIZE",
+      "title": "Phân tích riêng ERM nhỏ vs ERM lớn",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "ERM nhỏ|ERM lớn|small[^\\n]{0,20}large|phân độ|kích thước ERM"
+      ],
+      "severity": "minor",
+      "suggestion": "Báo cáo độ đo tách theo phân độ ERM nhỏ/lớn — ERM nhỏ là nhóm khó nhất theo y văn.",
+      "source": "HMYT docs/du_an/erm.md"
+    }
+  ],
+  "improvements": [
+    "Dữ liệu khan hiếm: cân nhắc generative augmentation (trang đề tài gợi ý, xem choi2024development) — luôn đánh giá trên ảnh thật, không trên ảnh sinh."
+  ]
+}

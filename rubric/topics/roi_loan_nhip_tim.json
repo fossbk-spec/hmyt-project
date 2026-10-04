@@ -1,0 +1,119 @@
+{
+  "topic_id": "1.2",
+  "topic_slug": "roi_loan_nhip_tim",
+  "group": 1,
+  "title": "Phân loại đa nhãn rối loạn nhịp tim từ ECG 12 chuyển đạo",
+  "modalities": [
+    "signal"
+  ],
+  "metric_set": "multilabel",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/roi_loan_nhip_tim",
+  "source": "HMYT docs/du_an/roi_loan_nhip_tim.md",
+  "dataset": "PTB-XL v1.0.3 (PhysioNet) — 21.837 bản ghi, 18.885 bệnh nhân",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc dùng cột `strat_fold` có sẵn của PTB-XL (10 fold) để chia patient-level — không tự chia lại ngẫu nhiên."
+  },
+  "xai_expected": [
+    "gradcam",
+    "shap",
+    "saliency"
+  ],
+  "xai_mandatory": true,
+  "benchmarks": [
+    {
+      "citekey": "strodthoff2021deep",
+      "note": "XResNet1d101 macro-AUC ~0,93 — mức sàn cần vượt qua"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.STRAT_FOLD",
+      "title": "Chia tập theo cột `strat_fold` có sẵn của PTB-XL",
+      "milestone": "M2",
+      "criterion": "M2.leakage",
+      "where": "code",
+      "any_of": [
+        "strat_fold"
+      ],
+      "severity": "critical",
+      "penalty": "Phần IV.1 — rò rỉ dữ liệu: trừ 50% điểm cột mốc phát hiện lỗi.",
+      "suggestion": "Train = strat_fold 1–8, Val = 9, Test = 10 (hoặc theo khuyến nghị của bài PTB-XL); assert không có patient_id trùng giữa các tập.",
+      "source": "HMYT docs/du_an/roi_loan_nhip_tim.md"
+    },
+    {
+      "id": "T.NO_RANDOM_SPLIT",
+      "title": "Không dùng train_test_split ngẫu nhiên thay cho strat_fold",
+      "milestone": "M2",
+      "criterion": "M2.leakage",
+      "where": "code",
+      "any_of": [
+        "train_test_split"
+      ],
+      "severity": "critical",
+      "type": "forbid",
+      "unless_any": [
+        "strat_fold"
+      ],
+      "unless_status": "WARN",
+      "unless_detail": "Có cả train_test_split và strat_fold — chỉ chấp nhận nếu train_test_split dùng tách validation BÊN TRONG các fold train.",
+      "fail_detail": "Dùng train_test_split mà không dùng strat_fold → chia ngẫu nhiên mức bản ghi.",
+      "penalty": "Phần IV.1 — vi phạm → trừ 50% điểm M2 (theo trang đề tài).",
+      "suggestion": "Bỏ train_test_split, chia theo strat_fold.",
+      "source": "HMYT docs/du_an/roi_loan_nhip_tim.md"
+    },
+    {
+      "id": "T.ECG_FILTER",
+      "title": "Lọc nhiễu đường nền (high-pass ~0,5 Hz) + notch 50/60 Hz",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "butter|filtfilt|sosfilt|highpass|high_pass|bandpass|ecg_clean",
+        "iirnotch|notch|ecg_clean"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "fail_status": "WARN",
+      "suggestion": "scipy.signal: butter high-pass ~0,5 Hz (baseline wander) + iirnotch 50/60 Hz, filtfilt để không lệch pha; giải thích tham số.",
+      "source": "HMYT docs/du_an/roi_loan_nhip_tim.md"
+    },
+    {
+      "id": "T.SCP_LABELS",
+      "title": "Xây nhãn đa nhãn từ `scp_codes` (≥ 5 superclass)",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "code",
+      "any_of": [
+        "scp_codes|diagnostic_class|superclass|scp_statements"
+      ],
+      "severity": "minor",
+      "suggestion": "Ánh xạ scp_codes → 5 superclass (NORM, MI, STTC, CD, HYP) qua scp_statements.csv; khuyến khích thử 23 subclass.",
+      "source": "HMYT docs/du_an/roi_loan_nhip_tim.md"
+    },
+    {
+      "id": "T.BENCHMARK",
+      "title": "Đối chiếu với benchmark strodthoff2021deep (macro-AUC ~0,93)",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "strodthoff"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Đặt kết quả của nhóm cạnh benchmark trong cùng bảng, cùng giao thức fold.",
+      "source": "HMYT docs/du_an/roi_loan_nhip_tim.md"
+    }
+  ],
+  "improvements": [
+    "Thử nhãn mức subclass (23 lớp) ngoài 5 superclass (trang đề tài khuyến khích).",
+    "Chọn ngưỡng ưu tiên Sensitivity cho lớp nguy hiểm (vd MI): bỏ sót MI nguy hiểm hơn báo động giả.",
+    "Đọc trước hong2026ecg (minh họa Zero Data Leakage bằng số liệu) trước khi code Milestone 2."
+  ],
+  "viva_questions": [
+    "Vì sao phải dùng `strat_fold` có sẵn của PTB-XL thay vì tự chia ngẫu nhiên các bản ghi?"
+  ]
+}

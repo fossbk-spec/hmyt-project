@@ -1,0 +1,97 @@
+{
+  "topic_id": "3.3",
+  "topic_slug": "te_nga_khang_cholinergic",
+  "group": 3,
+  "title": "Cảnh báo nguy cơ té ngã và Gánh nặng kháng cholinergic (DDI-AI)",
+  "modalities": [
+    "tabular"
+  ],
+  "metric_set": "binary",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/te_nga_khang_cholinergic",
+  "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md",
+  "dataset": "Dữ liệu đa dược trị giả lập dựa trên hồ sơ bệnh án người cao tuổi",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "shap"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "liu2025predicting",
+      "note": "5 mô hình ML dự báo té ngã, CatBoost AUC 0,8719"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.SYNTHETIC_DOC",
+      "title": "Mô tả rõ cách sinh dữ liệu giả lập",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "text",
+      "any_of": [
+        "giả lập|mô phỏng|synthetic|simulat"
+      ],
+      "severity": "minor",
+      "suggestion": "Ghi rõ phân phối, tham số và giả định khi sinh dữ liệu — để kết quả có thể diễn giải và tái lập.",
+      "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md"
+    },
+    {
+      "id": "T.ACB_SCORE",
+      "title": "Mã hóa thuốc + tính điểm ACB",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "any",
+      "any_of": [
+        "\\bACB\\b|anticholinergic|kháng cholinergic"
+      ],
+      "severity": "major",
+      "suggestion": "Tính Anticholinergic Burden (ACB) từ danh sách thuốc làm đặc trưng.",
+      "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md"
+    },
+    {
+      "id": "T.LOGREG_BASELINE",
+      "title": "Baseline Logistic Regression đối chứng (bắt buộc theo trang đề tài)",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "LogisticRegression"
+      ],
+      "severity": "major",
+      "suggestion": "Huấn luyện Logistic Regression làm mốc đối chứng trước khi thử RF/XGBoost/mạng sâu.",
+      "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md"
+    },
+    {
+      "id": "T.HARD_STOP_RULE",
+      "title": "Lớp rule-based hard-stop (STOPP/START) — không dùng ML cho hard-stop",
+      "milestone": "M3",
+      "criterion": "M3.proposed",
+      "where": "code",
+      "any_of": [
+        "hard.?stop|STOPP|START|rule.?based|luật"
+      ],
+      "severity": "major",
+      "suggestion": "Kiến trúc lai bắt buộc: ML cho điểm nguy cơ, rule-based cho cảnh báo hard-stop.",
+      "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md"
+    },
+    {
+      "id": "T.SEPARATE_EVAL",
+      "title": "Đánh giá RIÊNG: AUC cho phần ML, Precision/Recall cho phần hard-stop",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "hard.?stop[^\\n]{0,80}(precision|recall)|(precision|recall)[^\\n]{0,80}hard.?stop"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Tách 2 bảng đánh giá cho 2 thành phần của hệ thống lai.",
+      "source": "HMYT docs/du_an/te_nga_khang_cholinergic.md"
+    }
+  ],
+  "improvements": []
+}

@@ -1,0 +1,76 @@
+{
+  "topic_id": "2.2",
+  "topic_slug": "day_mat",
+  "group": 2,
+  "title": "Phân loại mức độ Bệnh võng mạc đái tháo đường qua ảnh đáy mắt",
+  "modalities": [
+    "image"
+  ],
+  "metric_set": "multiclass",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/day_mat",
+  "source": "HMYT docs/du_an/day_mat.md",
+  "dataset": "APTOS 2019 Blindness Detection (Kaggle) — mức độ DR 0–4",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient/eye-level split — 1 bệnh nhân có 2 mắt, không để 2 ảnh của cùng bệnh nhân rơi vào cả Train và Test; nếu dataset không có mã bệnh nhân, nêu rõ giới hạn này trong báo cáo."
+  },
+  "xai_expected": [
+    "gradcam",
+    "saliency"
+  ],
+  "xai_mandatory": true,
+  "benchmarks": [
+    {
+      "citekey": "ikram2025resvit",
+      "note": "ResNet50+ViT, APTOS 2019, LIME+Grad-CAM, accuracy 93,01%"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.CLAHE_ROI",
+      "title": "CLAHE/cân bằng histogram và cắt ROI",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "code",
+      "any_of": [
+        "CLAHE|equalizeHist|histogram",
+        "crop|\\bROI\\b|circle"
+      ],
+      "severity": "minor",
+      "suggestion": "CLAHE + cắt vùng đáy mắt; augmentation xoay/lật/crop — không tạo ảnh phi thực tế lâm sàng.",
+      "source": "HMYT docs/du_an/day_mat.md"
+    },
+    {
+      "id": "T.RESNET18_BASELINE",
+      "title": "Baseline ResNet-18 thô trước kiến trúc phức tạp",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "resnet[_-]?18"
+      ],
+      "severity": "minor",
+      "suggestion": "Chạy ResNet-18 (pretrained ImageNet, không tinh chỉnh kiến trúc) làm mốc so sánh.",
+      "source": "HMYT docs/du_an/day_mat.md"
+    },
+    {
+      "id": "T.GRADCAM_ANATOMY",
+      "title": "Grad-CAM đối chiếu vi phình mạch/xuất huyết/xuất tiết",
+      "milestone": "M4",
+      "criterion": "M4.xai",
+      "where": "report",
+      "any_of": [
+        "vi phình mạch|microaneurysm|xuất huyết|hemorrhage|haemorrhage|exudate|xuất tiết"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Mô hình “hộp đen” không có XAI không đạt tiêu chí đề tài; trình bày Grad-CAM từng ca, đối chiếu tổn thương thật.",
+      "source": "HMYT docs/du_an/day_mat.md"
+    }
+  ],
+  "improvements": [
+    "Học từ hemelings2021glaucoma cách thiết kế external validation (AUC 0,87 ngoài vs 0,94 nội bộ)."
+  ]
+}

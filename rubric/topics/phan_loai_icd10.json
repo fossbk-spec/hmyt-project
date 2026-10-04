@@ -1,0 +1,107 @@
+{
+  "topic_id": "4.2",
+  "topic_slug": "phan_loai_icd10",
+  "group": 4,
+  "title": "Tự động phân loại mã ICD-10 từ bản tóm tắt xuất viện",
+  "modalities": [
+    "nlp"
+  ],
+  "metric_set": "multilabel",
+  "rubric": "standard",
+  "track": "standard",
+  "page": "https://fossbk-spec.github.io/hmyt-book/du_an/phan_loai_icd10",
+  "source": "HMYT docs/du_an/phan_loai_icd10.md",
+  "dataset": "MIMIC-IV Clinical Database (Demo subset) — ICD-10",
+  "split": {
+    "one_row_per_patient": false,
+    "note": "Bắt buộc patient-level split theo mã bệnh nhân (không để 1 bệnh nhân xuất hiện ở cả Train và Test)."
+  },
+  "xai_expected": [
+    "attention",
+    "lime",
+    "shap",
+    "saliency"
+  ],
+  "benchmarks": [
+    {
+      "citekey": "huang2022plmicd",
+      "note": "PLM-ICD, macro-F1 0,615, micro-F1 60,8% (MIMIC-III, ICD-9)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "T.ICD10",
+      "title": "Dùng mã ICD-10 (MIMIC-IV), không phải ICD-9",
+      "milestone": "M1",
+      "criterion": "M1.eda",
+      "where": "any",
+      "any_of": [
+        "icd.?10|icd_version\\W{0,5}10"
+      ],
+      "severity": "major",
+      "suggestion": "Lọc `icd_version == 10`; nêu rõ khác biệt với các bài dùng MIMIC-III/ICD-9.",
+      "source": "HMYT docs/du_an/phan_loai_icd10.md"
+    },
+    {
+      "id": "T.BASELINE_TFIDF",
+      "title": "Baseline TF-IDF + Logistic Regression đa nhãn",
+      "milestone": "M2",
+      "criterion": "M2.baseline",
+      "where": "code",
+      "any_of": [
+        "TfidfVectorizer",
+        "LogisticRegression|OneVsRestClassifier"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "TF-IDF + OneVsRest(LogisticRegression) làm mốc.",
+      "source": "HMYT docs/du_an/phan_loai_icd10.md"
+    },
+    {
+      "id": "T.LONG_TEXT",
+      "title": "Xử lý văn bản dài (segment pooling/Longformer), không cắt bớt tùy tiện",
+      "milestone": "M2",
+      "criterion": "M2.preprocess",
+      "where": "any",
+      "any_of": [
+        "longformer|segment|chunk|sliding.?window|stride|pooling"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Chia đoạn + pooling hoặc mô hình ngữ cảnh dài; đo tỷ lệ văn bản vượt giới hạn token.",
+      "source": "HMYT docs/du_an/phan_loai_icd10.md"
+    },
+    {
+      "id": "T.MICRO_MACRO",
+      "title": "Báo cáo cả micro-F1 và macro-F1",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "any",
+      "any_of": [
+        "micro",
+        "macro"
+      ],
+      "severity": "major",
+      "min_distinct": 2,
+      "suggestion": "Micro-F1 phản ánh mã phổ biến, macro-F1 phản ánh mã hiếm — cần cả hai.",
+      "source": "HMYT docs/du_an/phan_loai_icd10.md"
+    },
+    {
+      "id": "T.LONG_TAIL",
+      "title": "Đánh giá tách riêng mã phổ biến vs mã hiếm (long-tail)",
+      "milestone": "M4",
+      "criterion": "M4.metrics",
+      "where": "report",
+      "any_of": [
+        "long.?tail|mã hiếm|mã phổ biến|\\brare\\b|\\bfrequent\\b|tần suất"
+      ],
+      "severity": "major",
+      "fail_status": "WARN",
+      "suggestion": "Chia mã theo tần suất (vd top-50 vs còn lại) và báo cáo F1 từng nhóm.",
+      "source": "HMYT docs/du_an/phan_loai_icd10.md"
+    }
+  ],
+  "improvements": [
+    "Kiểm chứng độ tương thích của kiến trúc PLM-ICD/XR-LAT (thiết kế cho MIMIC-III/ICD-9) khi áp dụng sang ICD-10 (trang đề tài)."
+  ]
+}

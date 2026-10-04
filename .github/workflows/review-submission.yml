@@ -1,0 +1,117 @@
+name: Review Submission (rubric)
+
+# Kiểm tra bài nộp theo Khung Quản Lý & Rubric ET4248 và gợi ý phương án nâng
+# cao chất lượng (scripts/review_project.py). Đây là check TƯ VẤN — không
+# đưa vào branch protection; cổng bắt buộc vẫn là validate-submission.yml.
+#
+# Báo cáo hiện ở tab Checks → "Review Submission (rubric)" → Summary, và
+# được lưu thành artifact `review-report`.
+#
+# An toàn: chạy với quyền đọc (permissions: contents: read), không dùng
+# secret; review_project.py chỉ đọc file của bài nộp (không chạy code sinh viên).
+on:
+  pull_request:
+    branches: [main]
+    paths: ["submissions/**"]
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: "Thư mục cần review (vd submissions/suy_tim_risk_dxai_nhom07). Để trống = review cả lớp"
+        required: false
+        default: ""
+      milestone:
+        description: "Mốc đánh giá (auto = theo trường milestone trong submission.json, mặc định final)"
+        type: choice
+        options: [auto, m1, m2, m3, m4, final]
+        default: auto
+      online:
+        description: "Kiểm tra trực tuyến: xác minh DOI (Crossref), nhánh gd1–gd7 của repo nhóm, so khớp code minh họa"
+        type: boolean
+        default: true
+      deadline:
+        description: "Hạn nộp YYYY-MM-DD (tùy chọn, giờ Việt Nam) để tính trễ hạn"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: review-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cài pdftotext (đọc báo cáo PDF)
+        run: sudo apt-get install -y --no-install-recommends poppler-utils >/dev/null || echo "Không cài được poppler-utils — bỏ qua phân tích PDF"
+
+      - name: Review bài nộp trong PR
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git diff --name-only HEAD^1 HEAD > changed_files.txt
+          printf '%s' "$PR_BODY" > pr_body.md
+          python scripts/review_project.py --pr-files changed_files.txt --pr-body pr_body.md --online \
+            --output review_report.md --json review_report.json
+
+      - name: Review theo yêu cầu của giảng viên
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          FOLDER: ${{ inputs.folder }}
+          MILESTONE: ${{ inputs.milestone }}
+          ONLINE: ${{ inputs.online }}
+          DEADLINE: ${{ inputs.deadline }}
+        run: |
+          args=()
+          if [ "$MILESTONE" != "auto" ]; then args+=(--milestone "$MILESTONE"); fi
+          if [ "$ONLINE" = "true" ]; then args+=(--online); fi
+          if [ -n "$DEADLINE" ]; then args+=(--deadline "$DEADLINE"); fi
+          if [ -n "$FOLDER" ]; then
+            python scripts/review_project.py "$FOLDER" "${args[@]}" --output review_report.md --json review_report.json
+          else
+            python scripts/review_project.py --all "${args[@]}" --output-dir review_reports --output review_report.md
+          fi
+
+      - name: Ghi báo cáo vào Summary
+        if: always()
+        run: |
+          if [ -f review_report.md ]; then
+            cat review_report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f review_report.json ]; then
+            python - <<'EOF'
+          import json, re
+          data = json.load(open("review_report.json", encoding="utf-8"))
+          for r in data if isinstance(data, list) else [data]:
+              n_crit, n_fail = len(r["critical"]), r["counts"]["FAIL"]
+              name = re.sub(r"[^\w.-]", "_", r["folder"].rsplit("/", 1)[-1])
+              if n_crit:
+                  print(f"::warning title=Review rubric::{name}: {n_crit} vấn đề nghiêm trọng, {n_fail} tiêu chí chưa đạt - xem Summary")
+              elif n_fail:
+                  print(f"::notice title=Review rubric::{name}: {n_fail} tiêu chí chưa đạt - xem Summary")
+          EOF
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-report
+          path: |
+            review_report.md
+            review_report.json
+            review_reports/
+          if-no-files-found: ignore
+          retention-days: 90

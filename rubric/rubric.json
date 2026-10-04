@@ -1,0 +1,277 @@
+{
+  "version": "2026-10",
+  "_comment": "Ánh xạ rubric → các check tự động của scripts/review_project.py. Điểm & mô tả 'Xuất sắc' lấy từ Khung Quản Lý & Rubric (HMYT docs/du_an_mon_hoc.md, Phần II–III) và Rubric Lab 3.4 (docs/du_an/suy_tim_risk_dxai_lab.md). Sửa xong chạy: python scripts/review_project.py --self-test",
+  "rubrics": {
+    "standard": {
+      "title": "Rubric 100 điểm — 4 Milestone + Chung kết (15 tuần)",
+      "source": "https://fossbk-spec.github.io/hmyt-book/du_an_mon_hoc",
+      "gated": true,
+      "total_points": 100,
+      "milestones": [
+        {
+          "id": "M0",
+          "title": "Hồ sơ nộp bài (điều kiện cần, không tính điểm)",
+          "weight": 0,
+          "criteria": [
+            {
+              "id": "M0.submission",
+              "title": "Cấu trúc & thông tin bài nộp",
+              "points": 0,
+              "checks": ["S.MANIFEST", "S.README", "S.MEMBERS", "S.REPORT_PRESENT", "S.TOPIC_FILES"]
+            }
+          ]
+        },
+        {
+          "id": "M1",
+          "title": "Milestone 1 (Tuần 3) — Đề cương lâm sàng & thẩm định dữ liệu EDA",
+          "weight": 15,
+          "criteria": [
+            {
+              "id": "M1.problem",
+              "title": "Tính cấp thiết & phát biểu bài toán",
+              "points": 4,
+              "excellent": "Xác định rõ bài toán y tế, đối tượng bệnh nhân, Input (X) và Output (Y); phân tích chi phí sai lầm bất đối xứng (FP vs FN).",
+              "checks": ["M1.PROBLEM"]
+            },
+            {
+              "id": "M1.literature",
+              "title": "Khảo sát y văn (Related Works)",
+              "points": 4,
+              "excellent": "Bảng ma trận so sánh ≥ 10 bài báo Q1/Q2 (3–5 năm gần nhất): Dataset, Kiến trúc, F1/AUC, XAI và nhược điểm cụ thể.",
+              "checks": ["M1.LIT_COUNT", "M1.LIT_MATRIX"]
+            },
+            {
+              "id": "M1.eda",
+              "title": "Thẩm định & khám phá dữ liệu (EDA)",
+              "points": 5,
+              "excellent": "Notebook EDA hoàn chỉnh: phân bố nhãn (imbalance), tuổi/giới, ma trận tương quan, trực quan mẫu ảnh/tín hiệu.",
+              "checks": ["M1.EDA"]
+            },
+            {
+              "id": "M1.git",
+              "title": "Kỷ luật Git & báo cáo tuần",
+              "points": 2,
+              "excellent": "Nhánh gd1, gd2 chuẩn mực; Issue báo cáo tuần đúng hạn; commit message đúng quy ước <type>(<scope>): <subject>.",
+              "checks": ["M1.GIT"]
+            }
+          ]
+        },
+        {
+          "id": "M2",
+          "title": "Milestone 2 (Tuần 6) — Tiền xử lý Zero-Leakage & mô hình Baseline",
+          "weight": 20,
+          "criteria": [
+            {
+              "id": "M2.leakage",
+              "title": "Quy tắc thép chống rò rỉ (Zero-Leakage)",
+              "points": 8,
+              "excellent": "Có assert chứng minh Train và Test độc lập 100% về patient_id; Scaler chỉ fit trên Train; xử lý dữ liệu khuyết không nhìn trước Test.",
+              "checks": ["M2.SPLIT_PATIENT", "M2.SPLIT_ASSERT", "M2.LEAK_FIT", "M2.LEAK_RESAMPLE", "M2.LEAK_CV_RESAMPLED", "M2.LEAK_FILLNA"]
+            },
+            {
+              "id": "M2.preprocess",
+              "title": "Kỹ thuật tiền xử lý đặc thù y sinh",
+              "points": 5,
+              "excellent": "Lọc nhiễu dải thông/Wavelet (tín hiệu), Windowing/chuẩn hóa HU (ảnh DICOM), hoặc mã hóa/điền khuyết lâm sàng (EHR) — có giải thích lý do y sinh.",
+              "checks": ["M2.PREPROCESS"]
+            },
+            {
+              "id": "M2.baseline",
+              "title": "Mô hình Baseline đối chứng",
+              "points": 5,
+              "excellent": "≥ 2 mô hình Baseline (Scikit-Learn cổ điển hoặc CNN/MLP chuẩn); bảng độ đo cơ sở làm mốc tham chiếu.",
+              "checks": ["M2.BASELINE"]
+            },
+            {
+              "id": "M2.pr",
+              "title": "Quy trình Pull Request & Review",
+              "points": 2,
+              "excellent": "PR nghiệm thu đúng mẫu, đính kèm Biomedical Reproducibility Checklist và bằng chứng kỹ thuật rõ ràng.",
+              "checks": ["M2.PR"]
+            }
+          ]
+        },
+        {
+          "id": "M3",
+          "title": "Milestone 3 (Tuần 10) — Mô hình đề xuất & Ablation Study",
+          "weight": 25,
+          "criteria": [
+            {
+              "id": "M3.proposed",
+              "title": "Tính sáng tạo & hợp lý của mô hình",
+              "points": 10,
+              "excellent": "Kiến trúc đề xuất rõ ràng, có căn cứ khoa học vững chắc (kết hợp trích xuất cục bộ + ngữ cảnh dài; hàm loss chống mất cân bằng).",
+              "checks": ["M3.PROPOSED"]
+            },
+            {
+              "id": "M3.ablation",
+              "title": "Nghiên cứu loại bỏ (Ablation Study)",
+              "points": 8,
+              "excellent": "Định lượng đóng góp độc lập của từng thành phần (bỏ module A, đổi hàm loss B, bỏ augmentation C).",
+              "checks": ["M3.ABLATION"]
+            },
+            {
+              "id": "M3.training",
+              "title": "Kỹ thuật huấn luyện & chống quá khớp",
+              "points": 4,
+              "excellent": "Regularization đúng (Dropout, Weight Decay, Early Stopping trên Val Loss); kiểm soát learning rate (Cosine Annealing/Warmup).",
+              "checks": ["M3.REGULARIZATION"]
+            },
+            {
+              "id": "M3.tracking",
+              "title": "Theo dõi huấn luyện (MLOps Tracking)",
+              "points": 3,
+              "excellent": "Weights & Biases hoặc TensorBoard; link dashboard công khai trực quan Loss/Metrics theo epoch.",
+              "checks": ["M3.TRACKING"]
+            }
+          ]
+        },
+        {
+          "id": "M4",
+          "title": "Milestone 4 (Tuần 12) — Đánh giá đa độ đo & tích hợp XAI",
+          "weight": 15,
+          "criteria": [
+            {
+              "id": "M4.metrics",
+              "title": "Hệ thống đa độ đo y tế & khoảng tin cậy",
+              "points": 6,
+              "excellent": "Sensitivity, Specificity, Macro F1, ROC-AUC, PR-AUC; 95% CI (Bootstrap); Calibration curve.",
+              "checks": ["M4.METRICS", "M4.CI", "M4.CALIBRATION"]
+            },
+            {
+              "id": "M4.xai",
+              "title": "Khả năng giải thích y khoa (XAI)",
+              "points": 6,
+              "excellent": "Grad-CAM (ảnh/tín hiệu) hoặc SHAP (bảng/EHR); ≥ 3 ca True Positive và ≥ 2 ca False Positive/Negative kèm đối chiếu giải phẫu học.",
+              "checks": ["M4.XAI", "M4.XAI_CASES"]
+            },
+            {
+              "id": "M4.error",
+              "title": "Phân tích lỗi sai (Error Analysis)",
+              "points": 3,
+              "excellent": "Phân tích confusion matrix, chỉ ra nguyên nhân y học của dự đoán sai (nhiễu, ca giáp ranh, nhãn hiếm).",
+              "checks": ["M4.ERROR_ANALYSIS"]
+            }
+          ]
+        },
+        {
+          "id": "FINAL",
+          "title": "Chung kết (Tuần 15) — Bài báo, mã nguồn & vấn đáp",
+          "weight": 25,
+          "criteria": [
+            {
+              "id": "FINAL.paper",
+              "title": "Chất lượng bài báo IEEE",
+              "points": 8,
+              "excellent": "Đúng chuẩn IEEE; logic IMRAD chặt chẽ; sơ đồ/bảng chuẩn xuất bản; trích dẫn BibTeX chuẩn xác; có mục AI Disclosure.",
+              "checks": ["F.PAPER_STRUCTURE", "F.IEEE_FORMAT", "F.LIMITATIONS", "F.AI_DISCLOSURE", "F.CREDIT"]
+            },
+            {
+              "id": "FINAL.repro",
+              "title": "Tính tái lập của mã nguồn",
+              "points": 6,
+              "excellent": "Repo sạch; requirements.txt cố định phiên bản; README 1 lệnh tái lập; cố định random seed; không file rác/data nặng.",
+              "checks": ["F.REQUIREMENTS", "F.README_RUN", "F.SEED", "F.ABS_PATH", "F.NOTEBOOK_EXEC", "F.JUNK"]
+            },
+            {
+              "id": "FINAL.slides",
+              "title": "Slide & kỹ năng thuyết trình",
+              "points": 5,
+              "excellent": "Slide trực quan, tập trung bài toán lâm sàng, kiến trúc cốt lõi và bảng đối chứng; trình bày 10–12 phút.",
+              "checks": ["F.SLIDES"]
+            },
+            {
+              "id": "FINAL.qa",
+              "title": "Vấn đáp phản biện hội đồng",
+              "points": 6,
+              "excellent": "Trả lời chính xác câu hỏi về giải thuật, y sinh và hạn chế; mọi thành viên đều tham gia trả lời.",
+              "checks": ["F.QA"]
+            }
+          ]
+        }
+      ]
+    },
+    "lab_3_4": {
+      "title": "Rubric Lab cấp tốc 5 buổi — Đề tài 3.4 (thang 100)",
+      "source": "https://fossbk-spec.github.io/hmyt-book/du_an/suy_tim_risk_dxai_lab",
+      "gated": false,
+      "total_points": 100,
+      "milestones": [
+        {
+          "id": "M0",
+          "title": "Hồ sơ nộp bài (điều kiện cần, không tính điểm)",
+          "weight": 0,
+          "criteria": [
+            {
+              "id": "M0.submission",
+              "title": "Cấu trúc & thông tin bài nộp",
+              "points": 0,
+              "checks": ["S.MANIFEST", "S.README", "S.MEMBERS", "S.REPORT_PRESENT", "S.TOPIC_FILES"]
+            }
+          ]
+        },
+        {
+          "id": "LAB",
+          "title": "Lab cấp tốc 5 buổi",
+          "weight": 100,
+          "criteria": [
+            {
+              "id": "L1",
+              "title": "1. Khám phá & tiền xử lý dữ liệu",
+              "points": 20,
+              "excellent": "Chia đúng Train/Test (stratified). Tránh hoàn toàn lỗi Data Leakage khi chuẩn hóa.",
+              "checks": ["M1.EDA", "M2.SPLIT_PATIENT", "M2.LEAK_FIT", "M2.LEAK_FILLNA"]
+            },
+            {
+              "id": "L2",
+              "title": "2. Tái lập Baseline",
+              "points": 20,
+              "excellent": "Chạy thành công Random Forest/LogReg, ra kết quả tiệm cận mốc 74% và phân tích độ lệch nếu có.",
+              "checks": ["M2.BASELINE"]
+            },
+            {
+              "id": "L3",
+              "title": "3. Áp dụng SMOTE & cải tiến",
+              "points": 20,
+              "excellent": "SMOTE chỉ áp dụng trên Train. Tăng được hiệu năng mô hình tiệm cận 90%+.",
+              "checks": ["M2.LEAK_RESAMPLE", "M2.LEAK_CV_RESAMPLED", "M3.ABLATION"]
+            },
+            {
+              "id": "L4",
+              "title": "4. Giải thích mô hình (SHAP)",
+              "points": 20,
+              "excellent": "Code vẽ đúng summary_plot. Phân tích được vai trò của Serum Creatinine / Ejection Fraction dựa trên dữ liệu hiển thị.",
+              "checks": ["M4.XAI"]
+            },
+            {
+              "id": "L5",
+              "title": "5. Báo cáo & nhận định y khoa",
+              "points": 20,
+              "excellent": "Báo cáo đầy đủ 6 cấu trúc. Nhận định trung thực các hạn chế của nghiên cứu (như cỡ mẫu nhỏ).",
+              "checks": ["F.PAPER_STRUCTURE", "F.LIMITATIONS", "M4.METRICS"]
+            }
+          ]
+        },
+        {
+          "id": "EXTRA",
+          "title": "Khuyến nghị ngoài rubric lab (không tính điểm) — tái lập & minh bạch",
+          "weight": 0,
+          "criteria": [
+            {
+              "id": "X.repro",
+              "title": "Tái lập & đánh giá chặt chẽ hơn",
+              "points": 0,
+              "checks": ["F.REQUIREMENTS", "F.README_RUN", "F.SEED", "F.ABS_PATH", "F.NOTEBOOK_EXEC", "F.JUNK", "M4.CI", "M4.ERROR_ANALYSIS"]
+            },
+            {
+              "id": "X.transparency",
+              "title": "Minh bạch học thuật",
+              "points": 0,
+              "checks": ["F.AI_DISCLOSURE", "M1.LIT_COUNT"]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
