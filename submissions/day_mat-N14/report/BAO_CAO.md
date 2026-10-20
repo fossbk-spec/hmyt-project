@@ -2,7 +2,7 @@
 
 ## 1. Đặt vấn đề
 
-**Câu hỏi nghiên cứu:** MPhân loại mức độ bệnh võng mạc đái tháo đường (Diabetic Retinopathy) từ ảnh chụp đáy mắt bằng học sâu, có giải thích được (XAI)
+**Câu hỏi nghiên cứu:** Phân loại mức độ bệnh võng mạc đái tháo đường (Diabetic Retinopathy) từ ảnh chụp đáy mắt bằng học sâu, có giải thích được (XAI)
 
 **Ý nghĩa lâm sàng:** Tích hợp AI và kỹ thuật giải thích trực quan (Grad-CAM) giúp các cơ sở y tế tuyến dưới tầm soát nhanh với chi phí thấp, đồng thời cung cấp bằng chứng vùng tổn thương để bác sĩ dễ dàng kiểm chứng và đưa ra quyết định điều trị.
 
