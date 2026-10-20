@@ -18,35 +18,20 @@
 | `dutta2026vgretfound` | RETFound (ViT foundation model) + vessel-graph learning + cross-modal fusion; BRSET chỉ dùng làm external validation độc lập | Accuracy 94,81% · F1 94,25% · MCC 93,09% · Kappa 92,94% |
 | `khosravi2024external` | FastVit_SA12 và ResNet18; phân loại nguyên nhân xuất huyết võng mạc (traumatic vs. medical); BRSET là một trong các bộ dữ liệu external validation | ResNet18: Accuracy 94,66% |
 
-### 2.1. Đọc kỹ full-text `chicco2020machine` trước khi so sánh
+### 2.1. Đọc kỹ full-text `dutta2026vgretfound` trước khi so sánh
 
-Đọc lướt tóm tắt dễ hiểu nhầm đây là 1 thí nghiệm "RF trên đủ đặc trưng"
-đơn lẻ — thực ra bài báo có **3 thí nghiệm tách biệt**, mỗi thí nghiệm lặp
-lại **100 lần** (random 80/20 split cho Random Forest, lấy trung bình):
+Đọc lướt abstract dễ hiểu nhầm đây là một thí nghiệm “train trên BRSET rồi test trên BRSET” — thực ra **BRSET chỉ được dùng làm external validation độc lập, hoàn toàn không tham gia huấn luyện, không augmentation, không tinh chỉnh siêu tham số** . Quy trình được mô tả rất rõ:
 
-| Thí nghiệm | Đặc trưng dùng | Mô hình tốt nhất | MCC | Accuracy | ROC AUC |
-|---|---|---|:---:|:---:|:---:|
-| **Bảng 4** — "toàn bộ đặc trưng lâm sàng" | 11 biến, **loại `time`** có chủ đích | Random Forest | **+0,384** | **0,740** | 0,800 |
-| **Bảng 9** — "chỉ 2 đặc trưng" | `serum_creatinine` + `ejection_fraction` | Random Forest | **+0,418** | 0,585 | 0,698 |
-| **Bảng 11** — "có thêm `follow-up month`" | `serum_creatinine` + `ejection_fraction` + `time` (rời rạc hóa theo tháng) | Logistic Regression (stratified) | **+0,616** | **0,838** | 0,822 |
+- **Tập phát triển (development):** RFMiD (3.200 ảnh) + ODIR-5K (~10.000 ảnh), được harmonize về 6 lớp độc quyền: Normal, **Diabetic Retinopathy (DR)**, AMD, Pathological Myopia, Hypertensive Retinopathy, Other Retinal Diseases .
 
-**Chính tác giả gốc đã chủ động thử nghiệm việc thêm `time` vào** (Bảng
-11) và kết luận: *"...highlighting the importance of this temporal
-variable"* (nhấn mạnh tầm quan trọng của biến thời gian này) — MCC
-tăng từ 0,384 lên 0,616 khi thêm `time`. Đây là điều bài báo gốc đã tự
-phân tích và công bố rõ ràng — không phải khoảng trống mà nhóm cần tự
-"phát hiện ra". Phân tích SHAP ở Mục 4.4/5 bên dưới (dùng mô hình cây,
-`time` dạng số ngày thô thay vì phân nhóm theo tháng) chỉ là **một cách
-tiếp cận khác dẫn tới cùng kết luận** — củng cố phát hiện gốc của tác giả.
+- **Tập external validation:** BRSET (16.266 ảnh), sau harmonize nhãn được lấy 20% stratified subset = 2.236 ảnh, trong đó chỉ có 209 ảnh thuộc lớp DR . Tập này **không hề được dùng để train, augmentation, hay model selection .**
 
-**Phương pháp đánh giá của bài báo gốc:** Random Forest/Decision
-Tree/Linear Regression/Naïve Bayes/One Rule dùng **80% train / 20% test**;
-riêng Neural Network/SVM/k-NN (cần tinh chỉnh siêu tham số) dùng 60/20/20.
-**Toàn bộ lặp lại 100 lần** và báo cáo giá trị trung bình — khác với ví dụ
-này (và có thể khác với cách nhóm bạn làm) chỉ chạy **1 lần** với
-`random_state` cố định. Đây là lý do chính khiến accuracy của ví dụ này
-(83,3%, xem Mục 4.1) và của bài báo (74,0%) không khớp dù cùng dùng Random
-Forest trên tập đặc trưng tương tự.
+- **Kiến trúc:** RETFound (retinal foundation model dựa trên ViT) học biểu diễn toàn cục; vessel-graph learning học cấu trúc mạch máu; cross-modal fusion kết hợp hai nguồn thông tin này trước khi đưa ra quyết định .
+
+- **Đánh giá:** Báo cáo **mean ± SD** trên cùng một tập BRSET 20% cố định, qua nhiều lần khởi tạo mô hình độc lập — không phải chia lại fold trên BRSET .
+
+**Điểm cần lưu ý:** DR chỉ là một trong 6 lớp, và trong tập external BRSET, DR chỉ chiếm 209/2.236 ảnh (~9,3%) . Vì vậy, con số F1 94,25% là macro/weighted F1 trên toàn bộ 6 lớp, không phải F1 riêng cho lớp DR. Đây là khác biệt căn bản so với một bài toán “phân loại mức độ DR” thuần túy (binary hoặc 5-class severity). Khi đối chiếu với kết quả của nhóm, cần tránh so sánh trực tiếp con số 94,25% với F1 của một mô hình chỉ phân loại DR.
+
 
 ---
 
