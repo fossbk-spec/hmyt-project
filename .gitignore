@@ -17,3 +17,6 @@ changed_files.txt
 /review_report*.json
 /review_reports/
 /bao_cao_review*.md
+
+# bản validator của main do CI sinh ra (validate-submission.yml)
+scripts/.validate_submission_base.py

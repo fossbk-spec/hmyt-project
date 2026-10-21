@@ -41,6 +41,11 @@ python scripts/review_project.py submissions/<topic_slug>_<ma_nhom> --milestone 
 Giảng viên review cả lớp: `python scripts/review_project.py --all --output-dir review_reports`
 hoặc chạy workflow **Review Submission (rubric)** (Actions → Run workflow, để trống `folder`).
 
+Danh sách đề tài và trọng số các mốc trong `rubric/` được đối chiếu tự động với dữ liệu
+công khai của [hmyt-book](https://fossbk-spec.github.io/hmyt-book/) (`data/projects.json`,
+`data/rubric.json`) bằng `scripts/check_upstream.py` — chạy trong CI
+`review-tool-selftest.yml` và hằng tuần. Xem [`rubric/README.md`](rubric/README.md).
+
 ## Cấu trúc repo
 
 ```

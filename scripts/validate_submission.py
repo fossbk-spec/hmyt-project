@@ -129,34 +129,52 @@ def validate_folder(folder: Path) -> list[str]:
     return errors
 
 
-def validate_pr_files(changed_files: list[str]) -> list[str]:
-    """Kiểm tra 1 PR chỉ đụng tới ĐÚNG 1 thư mục submissions/<slug>/ —
-    cách ly bắt buộc để nhóm A không thể vô tình/cố ý sửa bài nhóm B hoặc
-    các file gốc của repo."""
-    errors: list[str] = []
-    touched_submission_dirs: set[str] = set()
+def classify_pr(changed_files: list[str]) -> tuple[str, list[str], set[str]]:
+    """Phân loại PR theo file thay đổi.
 
+    - "submission": có ít nhất 1 file trong submissions/<slug>/ với slug khác _TEMPLATE
+      → PR nộp bài của sinh viên, áp dụng đầy đủ quy tắc cách ly.
+    - "infrastructure": KHÔNG đụng thư mục nộp bài nào (chỉ scripts/, rubric/, .github/,
+      tài liệu, submissions/_TEMPLATE/...) → PR hạ tầng của giảng viên. Không chặn ở đây;
+      quyền duyệt do CODEOWNERS + branch protection quyết định.
+    """
+    paths, slugs = [], set()
     for raw_path in changed_files:
         path = raw_path.strip().replace("\\", "/")
         if not path:
             continue
+        paths.append(path)
         parts = Path(path).parts
-        if len(parts) < 2 or parts[0] != "submissions":
+        if len(parts) >= 3 and parts[0] == "submissions" and parts[1] != TEMPLATE_NAME:
+            slugs.add(parts[1])
+    return ("submission" if slugs else "infrastructure"), paths, slugs
+
+
+def validate_pr_files(changed_files: list[str]) -> list[str]:
+    """Kiểm tra 1 PR nộp bài chỉ đụng tới ĐÚNG 1 thư mục submissions/<slug>/ —
+    cách ly bắt buộc để nhóm A không thể vô tình/cố ý sửa bài nhóm B hoặc
+    các file gốc của repo. PR hạ tầng (không đụng thư mục nộp bài nào) trả về
+    danh sách lỗi rỗng — xem classify_pr()."""
+    kind, paths, touched_submission_dirs = classify_pr(changed_files)
+    if kind == "infrastructure":
+        return []
+
+    errors: list[str] = []
+    for path in paths:
+        parts = Path(path).parts
+        if len(parts) < 3 or parts[0] != "submissions":
             errors.append(
-                f"PR sửa file ngoài 'submissions/': '{path}' — PR nộp bài chỉ được thay đổi "
+                f"PR nộp bài sửa file ngoài thư mục nộp bài: '{path}' — PR nộp bài chỉ được thay đổi "
                 f"file trong đúng 1 thư mục submissions/<đề-tài>_<mã-nhóm>/ của nhóm bạn."
             )
-            continue
-        touched_submission_dirs.add(parts[1])
+        elif parts[1] == TEMPLATE_NAME:
+            errors.append(f"PR sửa trực tiếp thư mục mẫu '{TEMPLATE_NAME}/' — không được sửa, hãy copy sang thư mục riêng.")
 
     if len(touched_submission_dirs) > 1:
         errors.append(
             f"PR đụng tới NHIỀU thư mục nộp bài cùng lúc: {sorted(touched_submission_dirs)} — "
             f"1 PR chỉ được nộp cho đúng 1 nhóm/1 thư mục."
         )
-
-    if TEMPLATE_NAME in touched_submission_dirs:
-        errors.append(f"PR sửa trực tiếp thư mục mẫu '{TEMPLATE_NAME}/' — không được sửa, hãy copy sang thư mục riêng.")
 
     for slug in touched_submission_dirs:
         folder = SUBMISSIONS_DIR / slug
@@ -174,6 +192,10 @@ def main() -> int:
 
     if args.pr_files:
         changed_files = Path(args.pr_files).read_text(encoding="utf-8").splitlines()
+        if classify_pr(changed_files)[0] == "infrastructure":
+            print("[PASSED] PR hạ tầng (không đụng thư mục nộp bài nào) — không áp dụng quy tắc nộp bài; "
+                  "cần giảng viên duyệt theo CODEOWNERS.")
+            return 0
         errors = validate_pr_files(changed_files)
     elif args.folder:
         errors = validate_folder(Path(args.folder))

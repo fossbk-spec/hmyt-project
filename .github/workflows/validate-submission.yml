@@ -33,5 +33,12 @@ jobs:
           echo "== File thay đổi trong PR =="
           cat changed_files.txt
 
-      - name: Kiểm tra cách ly + schema + dữ liệu nhạy cảm
-        run: python scripts/validate_submission.py --pr-files changed_files.txt
+      # Chạy validator của NHÁNH ĐÍCH (HEAD^1 = main), không phải bản trong PR:
+      # nếu chạy bản trong PR, một PR từ fork có thể sửa chính script này để
+      # luôn PASS. Đặt bản sao trong scripts/ để ROOT (= parent.parent) vẫn trỏ
+      # đúng thư mục repo đang checkout. Thay đổi validator chỉ có hiệu lực
+      # sau khi được merge (qua CODEOWNERS).
+      - name: Kiểm tra cách ly + schema + dữ liệu nhạy cảm (validator của main)
+        run: |
+          git show HEAD^1:scripts/validate_submission.py > scripts/.validate_submission_base.py
+          python scripts/.validate_submission_base.py --pr-files changed_files.txt
