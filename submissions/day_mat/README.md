@@ -5,7 +5,7 @@
 - **Mô hình chính:** XAI/Grad-CAM
 
 ## Mục đích của bài nộp này
-Đây là bài nộp chính thức cho đề tài Phân loại mức độ Bệnh võng mạc đái tháo đường (BRSET). Mục đích là minh họa:
+Đây là bài nộp chính thức cho đề tài Phân loại mức độ Bệnh võng mạc đái tháo đường (DR). Mục đích là minh họa:
 
 - Cấu trúc thư mục và định dạng báo cáo mà đề tài mong đợi.
 - Một pipeline chạy được đầu-cuối thật sự (không phải số liệu dựng sẵn) — từ EDA, tiền xử lý ảnh (ROI + CLAHE), huấn luyện Baseline, so sánh đối chứng các mô hình, đến XAI với Grad-CAM.
