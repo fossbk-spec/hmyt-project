@@ -37,156 +37,33 @@
 
 ## 3. Phương pháp
 
-- **Chia dữ liệu:** `train_test_split` 80/20, `stratify=death_event`,
-  `random_state=42` → Train 239 ca (32,22% tử vong), Test 60 ca (31,67%
-  tử vong) — tỷ lệ nhãn giữ đồng đều 2 tập.
-- **Chuẩn hóa:** `StandardScaler` — `fit` **chỉ trên Train**, `transform`
-  cho cả Train/Test (tránh data leakage).
-- **Baseline:** Logistic Regression + Random Forest (100 cây), không
-  SMOTE, đúng thiết kế gốc của `chicco2020machine`.
-- **Cải tiến:** `SMOTE` (`fit_resample` **chỉ trên Train** — Train sau
-  SMOTE: 324 mẫu, cân bằng 50/50) + Extra Trees (300 cây), theo
-  `ishaq2021improving`.
-- **Ablation bổ sung** (Buổi 3, nhiệm vụ 3): thử thêm GradientBoosting,
-  Random Forest đã tinh chỉnh (500 cây/max_depth=8), và so sánh 3 tập đặc
-  trưng (đủ 12 biến / bỏ `time` / chỉ 2 biến creatinine+EF) để hiểu rõ vai
-  trò của biến `time`.
-- **XAI:** `shap.TreeExplainer` trên mô hình Extra Trees+SMOTE, tính SHAP
-  values cho lớp "tử vong" trên tập Test.
-
+- **Chia dữ liệu:** Sử dụng giao thức chia tập **Patient-level Split** (đảm bảo không rò rỉ dữ liệu bệnh nhân giữa các tập). Tập dữ liệu BRSET gồm: Train (13.015 ảnh), Val (1.632 ảnh), Test (1.619 ảnh). Kiểm tra chéo xác nhận 0 bệnh nhân trùng lặp giữa 3 tập
+- **Tiền xử lý:** Tự động cắt viền đen (Auto-Crop ROI), tăng tương phản cục bộ bằng CLAHE trên không gian màu LAB, đồng bộ kích thước về 384x384 và chuẩn hóa (Normalize) theo chuẩn **ImageNet**.
+- **Xử lý mất cân bằng::** Do phân bố nhãn cực kỳ mất cân bằng (Nhãn 0 chiếm ~93%, Nhãn 3 chỉ có 78 ảnh), sử dụng hàm mất mát **Weighted Cross-Entropy** (tính toán trọng số lớp đảo nghịch tần suất) để ép mô hình chú ý vào các lớp bệnh hiếm.
+- **Baseline:** Sử dụng 'ResNet-18' (pre-trained ImageNet) làm mô hình cơ sở.
+- **Huấn luyện:** Tối ưu hóa AdamW, điều chỉnh Learning Rate (CosineAnnealingLR), kết hợp Mixed Precision (AMP) để tăng tốc và Early Stopping (Patience=5) để chống 'Overfitting'. Sử dụng Data Augmentation (lật, xoay, biến đổi màu sắc).
+- **XAI:** Sử dụng Grad-CAM trên lớp tích chập cuối cùng để trực quan hóa vùng ảnh mà mô hình đang tập trung chú ý.
 ---
 
 ## 4. Kết quả
 
-### 4.1. Baseline (không SMOTE) — đối chiếu `chicco2020machine`
+### 4.1. Baseline ResNet-18
+- Đạt **Val Accuracy** 94.36%.
+- **Đánh giá y tế (Test set):** Mô hình đạt độ nhạy (Sensitivity) rất cao ở nhãn 0 (không bệnh) và nhãn 4 (tăng sinh). Tuy nhiên, do mất cân bằng dữ liệu, mô hình dự đoán kém chính xác ở nhãn 3 (chỉ 1/6 ca đoán đúng).
+- **Phân tích FP/FN:** Mô hình có xu hướng dự đoán nhầm nhãn 0 thành nhãn 1 hoặc nhãn 4 (Báo động giả - FP) thay vì bỏ sót bệnh nặng thành không bệnh (Bỏ sót - FN). Điều này phù hợp với nguyên tắc "thà bắt nhầm còn hơn bỏ sót" trong y tế.
+---
 
-| Mô hình | Accuracy | MCC | F1 | Precision | Recall | AUC |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Logistic Regression | 81,7% | 0,556 | 66,7% | 78,6% | 57,9% | 85,9% |
-| **Random Forest (baseline)** | **83,3%** | **0,600** | 70,6% | 80,0% | 63,2% | 89,1% |
-| *Chicco 2020 (công bố)* | *74,0%* | *0,384* | — | — | — | — |
+## 5. Khả năng giải thích (XAI - Grad-CAM)
+- **Phát hiện Shortcut Learning:** Bản đồ nhiệt Grad-CAM cho thấy ở nhãn 0 (Không bệnh), AI có xu hướng nhìn vào viền đen/ánh sáng ở rìa ảnh thay vì vùng võng mạc trung tâm.
 
-→ Random Forest baseline của ví dụ này **vượt** con số công bố gốc (83,3%
-vs 74,0%; MCC 0,600 vs 0,384). **2 lý do chính:**
-
-1. **Baseline ở đây dùng đủ 12 biến (gồm `time`)**, còn Bảng 4 của bài
-   báo gốc **loại `time`** có chủ đích (xem Mục 2.1) — `time` là biến
-   mạnh nhất (Mục 4.4), nên có nó gần như chắc chắn đẩy accuracy lên.
-2. **N=299, test set chỉ 60 ca, ví dụ này chỉ chạy 1 split**
-   (`random_state=42`) — trong khi bài báo gốc lấy **trung bình của 100
-   lần chạy** với các split ngẫu nhiên khác nhau. 1 con số đơn lẻ trên tập
-   nhỏ dao động rất mạnh theo may rủi của lần chia tập; trung bình 100 lần
-   mới phản ánh đúng hiệu năng kỳ vọng.
-
-Đây là điểm đáng đưa vào phần "Hạn chế" của báo cáo: **một con số accuracy
-đơn lẻ trên tập nhỏ không đáng tin cậy nếu không có khoảng tin cậy (CI)
-hoặc lặp lại nhiều lần (như chính bài báo gốc đã làm — 100 executions).**
-
-### 4.2. Cải tiến với SMOTE — đối chiếu `ishaq2021improving`
-
-| Mô hình | Accuracy | MCC | F1 |
-|---|:---:|:---:|:---:|
-| Extra Trees + SMOTE (300 cây, như lab yêu cầu) | 76,7% | 0,418 | 53,3% |
-| Random Forest + SMOTE (100 cây) | 80,0% | 0,538 | 68,4% |
-| **Random Forest + SMOTE (500 cây, max_depth=8 — tinh chỉnh)** | **85,0%** | **0,649** | **75,7%** |
-| *Ishaq 2021 (công bố)* | *92,6%* | — | — |
-
-→ **Không tiệm cận được 92,6%** dù đã tinh chỉnh (mốc gần nhất đạt 85,0%
-test-set thật). Điều này **không có nghĩa pipeline sai** — xem phát hiện ở
-Mục 4.3.
-
-### 4.3. Phát hiện đáng chú ý: bẫy "CV sau SMOTE"
-
-Khi đánh giá bằng 5-fold cross-validation **trên chính tập đã SMOTE**
-(thay vì tập Test giữ nguyên gốc), Random Forest 500 cây cho
-**accuracy 90,1% ± 4,4%** — rất gần 92,6% của Ishaq. Nhưng con số này
-**lạc quan giả tạo**: khi SMOTE sinh mẫu tổng hợp trước rồi mới chia
-CV-fold, một số mẫu tổng hợp ở fold validation được nội suy từ hàng xóm
-gần nằm ở fold train → rò rỉ thông tin giữa các fold. Test set thật (chưa
-từng bị SMOTE đụng vào) chỉ cho 85,0%.
-
-**Giả thuyết hợp lý:** nhiều bài báo trong dòng nghiên cứu này (có thể
-gồm cả `ishaq2021improving`) áp dụng SMOTE **trước** khi chia CV thay vì
-chỉ trên fold train của từng vòng — đúng loại lỗi mà bản lab đã cảnh báo
-đỏ ở Buổi 3 ("SMOTE tuyệt đối chỉ được áp dụng trên tập Train"). Nếu nhóm
-bạn gặp tình huống tương tự (không tiệm cận được con số công bố dù đã làm
-đúng quy trình), đây là một hướng giải thích hợp lý đáng đưa vào báo cáo
-thay vì chỉ cố tinh chỉnh siêu tham số để "đuổi theo con số".
-
-### 4.4. Ablation vai trò biến `time`
-
-| Tập đặc trưng | Random Forest (không SMOTE) | Δ so với đủ 12 biến |
-|---|:---:|:---:|
-| Đủ 12 biến (gồm `time`) | Accuracy 83,3% · MCC 0,600 | — |
-| Bỏ `time` (11 biến) | Accuracy 70,0% · MCC 0,251 | **−13,3 điểm % / −0,349 MCC** |
-| Chỉ `serum_creatinine` + `ejection_fraction` (2 biến, đúng tiêu đề bài báo gốc) | Accuracy 71,7% · MCC 0,287 | −11,6 điểm % / −0,313 MCC |
-
-→ `time` (số ngày theo dõi) một mình đóng góp phần lớn sức mạnh dự báo
-của mô hình đủ đặc trưng — khớp với vị trí #1 tuyệt đối trong SHAP (Mục
-5), và **khớp trực tiếp với phát hiện của chính bài báo gốc** (Bảng 11:
-thêm `time` đẩy MCC từ 0,384 → 0,616, xem Mục 2.1).
-
-Về mặt lâm sàng, `time` **không phải là biến biết trước tại thời điểm
-nhập viện** — bản chất giống thời gian theo dõi/censoring hơn là một yếu
-tố nguy cơ đo được lúc khám. Dùng nó làm đặc trưng dự báo có thể bị xem
-là **rò rỉ thông tin tương lai (temporal leakage)** tùy theo cách đặt bài
-toán — **điểm này bài báo gốc không bàn tới** (họ chỉ khẳng định `time`
-"quan trọng", không đặt câu hỏi liệu dùng nó có hợp lý về mặt lâm sàng hay
-không). Đây là một góc nhìn phản biện các nhóm có thể tự phát triển thêm
-trong báo cáo của mình.
+- **Đánh giá lâm sàng:** Ở các nhãn bệnh nặng (3, 4), vùng đỏ (vùng AI chú ý) tập trung chính xác vào các đốm xuất huyết và vi phình mạch. Điều này chứng minh AI thực sự đã học được đặc trưng bệnh lý y khoa, không chỉ học vẹt hình dáng ảnh.
 
 ---
 
-## 5. Khả năng giải thích (SHAP)
+## 6. Hạn chế & Hướng phát triển
 
-Mô hình: Extra Trees + SMOTE (đúng yêu cầu Buổi 4). File ảnh:
-`shap_summary_bar.png`, `shap_summary_beeswarm.png` (thư mục `report/`).
-
-| Hạng | Đặc trưng | Mean |SHAP value|| Ghi chú |
-|:---:|---|:---:|---|
-| 1 | `time` | 0,1559 | Chi phối mạnh nhất — xem thảo luận Mục 4.4 |
-| 2 | `ejection_fraction` | 0,0759 | **Khớp y văn** — 1 trong 2 biến "quyết định" theo Chicco 2020 |
-| 3 | `serum_creatinine` | 0,0689 | **Khớp y văn** — biến còn lại theo Chicco 2020 |
-| 4 | `age` | 0,0303 | |
-| 5 | `serum_sodium` | 0,0288 | |
-| 6-12 | còn lại | <0,03 | high_blood_pressure, anaemia, diabetes, creatinine_phosphokinase, sex, platelets, smoking |
-
-`ejection_fraction` và `serum_creatinine` đứng **#2 và #3** — đúng như y
-văn khẳng định là 2 chỉ số quyết định nhất trong mô hình **loại `time`**
-(Bảng 8 của bài báo gốc: Random Forest feature ranking không có `time`,
-`serum_creatinine` #1, `ejection_fraction` #2 — khớp gần như tuyệt đối với
-kết quả ở đây khi bỏ `time`, xem cột "Bỏ `time`" ở Mục 4.4). Ở SHAP đầy đủ
-(model CÓ `time`), 2 biến này tụt xuống #2/#3 vì bị `time` vượt qua — đây
-chính là kết luận Bảng 11 của bài báo gốc, không phải sai lệch do SMOTE
-(đã kiểm chứng: correlation Pearson thô trên dữ liệu gốc — chưa SMOTE —
-cũng cho `time` đứng #1 với hệ số −0,527, mạnh hơn hẳn serum_creatinine
-+0,294 và ejection_fraction −0,269).
-
----
-
-## 6. Hạn chế
-
-1. **Cỡ mẫu nhỏ (N=299), test set chỉ 60 ca** — mọi con số accuracy/MCC
-   dao động mạnh theo `random_state`; cần CV lặp lại nhiều lần + báo cáo
-   khoảng tin cậy (Bootstrap 95% CI) mới đáng tin, một con số đơn lẻ không
-   đủ.
-2. **Biến `time` mang nguy cơ rò rỉ thời gian (temporal leakage)** — xem
-   Mục 4.4. Một pipeline dự báo nguy cơ thực tế (tại thời điểm nhập viện)
-   nên cân nhắc bỏ `time` hoặc dùng nó theo cách khác (biến mục tiêu trong
-   bài toán survival analysis, không phải đặc trưng đầu vào của bài toán
-   phân loại nhị phân).
-3. **Dữ liệu 1 trung tâm, năm 2015, dân số Pakistan** — chưa có external
-   validation trên dân số khác; không nên khái quát hóa trực tiếp. Đây
-   cũng là hạn chế chính bài báo gốc tự nêu ("small size of the dataset",
-   thiếu thông tin thể trạng, không có validation cohort khác khu vực) —
-   nếu chỉ liệt kê lại đúng những điểm này thì báo cáo còn thiếu chiều
-   sâu; nên tự nêu thêm góc nhìn riêng (vd điểm 2 ở trên, bài báo gốc
-   không bàn tới).
-4. **SMOTE không cải thiện chắc chắn** — trong ví dụ này, SMOTE + Extra
-   Trees (đúng cấu hình lab yêu cầu) cho kết quả **kém hơn** cả Random
-   Forest baseline không SMOTE (MCC 0,418 vs 0,600) trên tập Test thật.
-   SMOTE giúp cân bằng lớp nhưng không đảm bảo luôn tăng hiệu năng trên
-   tập test giữ nguyên phân bố gốc — nên thử nghiệm có đối chứng (có/không
-   SMOTE) thay vì mặc định SMOTE luôn tốt hơn.
-5. **Chưa có đánh giá lâm sàng thực địa (HITL)** — mô hình chỉ dừng ở mức
-   nghiên cứu, không thay thế đánh giá bác sĩ.
+1. **Mất cân bằng dữ liệu cực đoan:** Nhãn 3 (Nặng) chỉ có 78 ảnh (chiếm <0.5%), dẫn đến kết quả dự đoán nhãn này trên tập Test rất thấp. Đây là **hạn chế cố hữu của dữ liệu BRSET**, không thể khắc phục hoàn toàn bằng Weighted Loss mà cần thêm dữ liệu thực tế.
+2. **Hiện tượng Shortcut Learning (Học đường tắt):** Qua Grad-CAM, mô hình nhãn 0 bị phụ thuộc vào viền ảnh ngoài. Trong tương lai cần áp dụng thêm kỹ thuật **Circular Masking** (tạo mặt nạ đen che viền) để ép AI chỉ nhìn vào trung tâm võng mạc.
+3. **Chưa hoàn thành đối chứng đa mô hình:** Do giới hạn về thời gian và tài nguyên tính toán, đề tài hiện tại mới dừng lại ở việc tối ưu mô hình Baseline ResNet-18. Việc thử nghiệm và so sánh với các kiến trúc chuyên sâu hơn như DenseNet-121 và EfficientNet sẽ là hướng phát triển tiếp theo để đánh giá toàn diện hơn.
+4. **Dữ liệu đơn nguồn:** Tập dữ liệu BRSET chỉ thu thập tại Brazil với một loại máy chụp (Canon CR-2). Mô hình chưa được đánh giá chéo (external validation) trên các dân số khác hoặc các dòng máy khác.
+5. **Chưa triển khai Segmentation:** Do BRSET không cung cấp nhãn Mask điểm ảnh (pixel-level), đề tài chưa thể triển khai mô hình U-Net để khoanh vùng chính xác từng tổn thương, mà chỉ dừng ở mức phân loại ảnh (Classification).
