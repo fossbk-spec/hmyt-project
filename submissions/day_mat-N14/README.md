@@ -4,34 +4,32 @@
 - **Nhóm:** 14
 - **Mô hình chính:** XAI/Grad-CAM
 
-## Mục đích của ví dụ này
+## Mục đích của bài nộp này
+Đây là bài nộp chính thức cho đề tài Phân loại mức độ Bệnh võng mạc đái tháo đường (BRSET). Mục đích là minh họa:
 
-Đây **không phải** đáp án hay bài nộp mẫu để chép lại. Mục đích là minh
-họa:
-1. Cấu trúc thư mục và định dạng báo cáo mà đề tài 3.4 mong đợi.
-2. Một pipeline chạy được đầu-cuối thật sự (không phải số liệu dựng sẵn) —
-   từ EDA, baseline, SMOTE+ablation, đến XAI với SHAP.
-3. Cách đối chiếu kết quả của nhóm với y văn gốc **một cách trung thực**
-   — kể cả khi kết quả không khớp con số công bố (xem báo cáo, đặc biệt
-   Mục 4.2–4.3), thay vì chỉnh sửa để "trông giống" bài báo.
-
-Số liệu, tham số mô hình, và kết luận của nhóm bạn hoàn toàn có thể (và
-nên) khác với ví dụ này.
+- Cấu trúc thư mục và định dạng báo cáo mà đề tài mong đợi.
+- Một pipeline chạy được đầu-cuối thật sự (không phải số liệu dựng sẵn) — từ EDA, tiền xử lý ảnh (ROI + CLAHE), huấn luyện Baseline, so sánh đối chứng các mô hình, đến XAI với Grad-CAM.
+- Cách đối chiếu kết quả một cách trung thực — phản ánh đúng những hạn chế cố hữu của dữ liệu y tế (mất cân bằng lớp cực đoan, hiện tượng Shortcut Learning) thay vì chỉnh sửa để "trông có vẻ hoàn hảo".
+- Số liệu, tham số mô hình, và kết luận của nhóm hoàn toàn dựa trên kết quả thực nghiệm thực tế từ môi trường Kaggle.
 
 ## Cấu trúc thư mục
-
-- `report/BAO_CAO_VI_DU.md` — báo cáo đầy đủ 6 phần + 2 biểu đồ SHAP
-- `src/` — mã nguồn chạy được (`run_analysis.py`, `run_ablation.py`)
-- `data/` — bộ dữ liệu đã dùng (bản sao công khai từ UCI)
+- `report/BAO_CAO_DO_AN.docx` — Báo cáo đầy đủ các phần + hình ảnh biểu đồ (EDA, Confusion Matrix, biểu đồ FP/FN, và ảnh Grad-CAM).
+- `src/` — Mã nguồn chạy được (`eda.py`, `preprocess.py`, `train_baseline.py`, `evaluate.py`, `xai_gradcam.py`, v.v.).
+- `data/` — Bộ dữ liệu đã dùng (chứa file text ghi link tải bản sao công khai từ Kaggle).
 
 ## Cách chạy lại (reproducibility)
-
-```
+```bash
 cd src
-pip install pandas numpy scikit-learn imbalanced-learn shap matplotlib
-python run_analysis.py     # EDA + baseline + SMOTE + Extra Trees + SHAP
-python run_ablation.py     # So sánh cấu hình mô hình/tập đặc trưng
-```
+pip install pandas numpy matplotlib seaborn opencv-python scikit-learn
+pip install torch torchvision albumentations
+pip install pytorch-grad-cam
 
-Dữ liệu đầu vào: `data/heart_failure_clinical_records.csv` (đặt cùng thư
-mục với script khi chạy, hoặc sửa đường dẫn trong script).
+python eda.py                # Phân tích khám phá dữ liệu (EDA)
+python preprocess.py         # Tiền xử lý ảnh (Crop ROI + CLAHE + Resize)
+python train_baseline.py     # Huấn luyện mô hình ResNet-18 (Baseline)
+python train_densenet.py     # Huấn luyện mô hình DenseNet-121 (Đối chứng)
+python train_efficientnet.py # Huấn luyện mô hình EfficientNet-B0 (Đối chứng)
+python evaluate.py           # Đánh giá mô hình (F1, Sensitivity, Confusion Matrix)
+python xai_gradcam.py        # Trích xuất bản đồ nhiệt Grad-CAM (Giải thích AI)
+
+Dữ liệu đầu vào: Bộ dữ liệu ảnh võng mạc BRSET (`tanzinabdul/fundus-patientwise-split`) được tải từ nền tảng Kaggle. Do dung lượng dữ liệu lớn (~15GB), thư mục `data/` chỉ chứa file `link_tai_du_lieu.txt` ghi lại đường dẫn tải. Đường dẫn mặc định trong các script là: `/kaggle/input/fundus-patientwise-split/dataset_split` (người dùng có thể sửa lại biến `BASE` trong script nếu chạy ở môi trường local).
