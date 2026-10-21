@@ -186,9 +186,4 @@ Bước tiếp theo:
 
 
 
-Không upload dữ liệu MIMIC-IV gốc hoặc dataset dẫn xuất theo từng bệnh nhân lên GitHub công khai.
-
-
-
-File `hf\_model\_dataset\_final.csv.gz` chỉ được lưu cục bộ.
 
