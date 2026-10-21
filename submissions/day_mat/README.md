@@ -13,7 +13,7 @@
 - Số liệu, tham số mô hình, và kết luận của nhóm hoàn toàn dựa trên kết quả thực nghiệm thực tế từ môi trường Kaggle.
 
 ## Cấu trúc thư mục
-- `report/BAO_CAO_DO_AN.docx` — Báo cáo đầy đủ các phần + hình ảnh biểu đồ (EDA, Confusion Matrix, biểu đồ FP/FN, và ảnh Grad-CAM).
+- `report/BAO_CAO.md` — Báo cáo đầy đủ các phần + hình ảnh biểu đồ (EDA, Confusion Matrix, biểu đồ FP/FN, và ảnh Grad-CAM).
 - `src/` — Mã nguồn chạy được (`eda.py`, `preprocess.py`, `train_baseline.py`, `evaluate.py`, `xai_gradcam.py`, v.v.).
 - `data/` — Bộ dữ liệu đã dùng (chứa file text ghi link tải bản sao công khai từ Kaggle: https://www.kaggle.com/datasets/tanzinabdul/fundus-patientwise-split)
 
