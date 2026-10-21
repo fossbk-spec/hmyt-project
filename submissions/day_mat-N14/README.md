@@ -31,5 +31,3 @@ python train_densenet.py     # Huấn luyện mô hình DenseNet-121 (Đối ch�
 python train_efficientnet.py # Huấn luyện mô hình EfficientNet-B0 (Đối chứng)
 python evaluate.py           # Đánh giá mô hình (F1, Sensitivity, Confusion Matrix)
 python xai_gradcam.py        # Trích xuất bản đồ nhiệt Grad-CAM (Giải thích AI)
-
-Dữ liệu đầu vào: Bộ dữ liệu ảnh võng mạc BRSET (`tanzinabdul/fundus-patientwise-split`) được tải từ nền tảng Kaggle. Do dung lượng dữ liệu lớn (~15GB), thư mục `data/` chỉ chứa file `link_tai_du_lieu.txt` ghi lại đường dẫn tải. Đường dẫn mặc định trong các script là: `/kaggle/input/fundus-patientwise-split/dataset_split` (người dùng có thể sửa lại biến `BASE` trong script nếu chạy ở môi trường local).
