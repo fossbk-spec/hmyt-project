@@ -1,0 +1,50 @@
+{
+  "scope": "Training split fits models; validation split selects model and threshold; no test metrics computed.",
+  "notebook_sha256": "f2b21246e946e8756e118624f7edf8260266e3282f624be137d45a705d31ea25",
+  "manifest_sha256": "1a4546e113517ddcf546f6c0bf844f8374245d4220b0601d29570032ef6795d7",
+  "python": "3.12.10",
+  "sklearn": "1.6.1",
+  "seed": 42,
+  "features": [
+    "age_scaled",
+    "sex_binary",
+    "heart_transplant",
+    "lung_transplant",
+    "pacemaker_or_icd"
+  ],
+  "train_images": 50233,
+  "val_images": 10970,
+  "selected_model": "HistGradientBoosting",
+  "selected_threshold": 0.07,
+  "elapsed_seconds": 3.411,
+  "validation_results": [
+    {
+      "model": "Logistic Regression",
+      "threshold": 0.3999999999999999,
+      "precision": 0.17018498367791077,
+      "recall": 0.9720323182100684,
+      "f2": 0.5004479713298349,
+      "roc_auc": 0.6476182970629968,
+      "pr_auc": 0.23770634065696755,
+      "tn": 1735,
+      "fp": 7626,
+      "fn": 45,
+      "tp": 1564,
+      "specificity": 0.18534344621301144
+    },
+    {
+      "model": "HistGradientBoosting",
+      "threshold": 0.07,
+      "precision": 0.15425378167453513,
+      "recall": 0.9950279676817899,
+      "f2": 0.4760630389533155,
+      "roc_auc": 0.614891007073567,
+      "pr_auc": 0.2632663966188207,
+      "tn": 583,
+      "fp": 8778,
+      "fn": 8,
+      "tp": 1601,
+      "specificity": 0.06227967097532315
+    }
+  ]
+}

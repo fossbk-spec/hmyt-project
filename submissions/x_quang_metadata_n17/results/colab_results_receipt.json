@@ -1,0 +1,18 @@
+{
+  "source": "Aggregate files downloaded by the user from the Colab Drive output folder",
+  "imported_on": "2026-11-01",
+  "source_sha256": {
+    "dl_training_history.csv": "ae11c396308abe7583c1c3af30720833e3c23af4ebd93fdd8941aefdc29c4248",
+    "selected_thresholds.json": "105598d31ebebf603939196db53452a2f1576af2d562584adbddfae85054d3b5",
+    "test_metrics.csv": "934a349c31f5c30b989efc27c3aaa384cda1b57e3fade561b33e5445bd065609"
+  },
+  "f2_recalculation": "All three rows agree with 5PR/(4P+R) within 1e-12",
+  "threshold_consistency": "All three metric rows agree with selected_thresholds.json",
+  "best_validation_epoch": 1,
+  "recorded_epochs": 4,
+  "limitations": [
+    "No per-examination prediction file or checkpoint supplied",
+    "Cannot independently recompute AUROC/AP, confidence intervals or specificity from these aggregates",
+    "Saved notebook remains unexecuted locally; user-provided files are the Colab result evidence"
+  ]
+}
