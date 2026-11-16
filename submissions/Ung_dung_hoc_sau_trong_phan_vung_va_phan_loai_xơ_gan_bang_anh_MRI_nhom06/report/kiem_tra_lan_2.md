@@ -43,6 +43,9 @@ Tiêu chí chọn / loại bài:
 
 Ghi chú: Dice valid (gộp pixel theo batch) và Dice test (trung bình từng lát) tính khác nhau nên không so trực tiếp. Trên test có 83 lát không có gan (238 lát nhóm khỏe trừ 155 lát có gan), mô hình dự đoán nhầm có gan ở 6 lát. Slide báo cáo hiện chưa có kết quả phân loại.
 ### A3. Research gaps
+### A3. Research gaps
+| Mã | Khoảng trống | Bằng chứng | Dự án của nhóm giải quyết bằng cách nào |
+|---|---|---|---|
 |G1| Khoảng trống về khả năng tổng quát hóa của mô hình: Phần lớn nghiên cứu sử dụng dữ liệu MRI từ một trung tâm và đánh giá trên các tập chia nội bộ, chưa chứng minh đầy đủ khả năng tổng quát hóa trên các nguồn dữ liệu độc lập.| Bằng chứng: #1, #2, #3, #4, #6, #7, #9, #10.|Dự án của nhóm giải quyết bằng cách: Sử dụng bộ dữ liệu CirrMRI600+ để xây dựng và đánh giá mô hình trên ảnh MRI T2W, với các tập train, validation và test được phân chia rõ ràng.
 |G2| Khoảng trống về phân loại chi tiết các giai đoạn xơ hóa: Các nghiên cứu trên MRI T2W chủ yếu tập trung phát hiện xơ gan hoặc xơ hóa tiến triển, trong khi khả năng phân loại chi tiết các giai đoạn xơ hóa F0–F4 vẫn còn hạn chế.| Bằng chứng: #1, #2, #4, #7| Dự án của nhóm giải quyết bằng cách: Nghiên cứu khả năng phân loại mức độ xơ hóa gan từ ảnh MRI, hướng đến các giai đoạn F0–F4 theo nhãn dữ liệu hiện có.
 |G3| Khoảng trống về ảnh hưởng của phân vùng gan đến kết quả phân loại: Sai số trong quá trình phân vùng gan có thể ảnh hưởng đến chất lượng đặc trưng đầu vào và kết quả phân loại xơ hóa, nhưng ảnh hưởng này chưa được đánh giá đầy đủ trong các quy trình học sâu| Bằng chứng: #1, #2, #3, #7, #10| Dự án của nhóm giải quyết bằng cách: Thực hiện phân vùng gan trước khi trích xuất đặc trưng, đồng thời khảo sát vai trò của vùng gan và ảnh hưởng của chất lượng phân vùng đến kết quả mô hình.
@@ -50,16 +53,17 @@ Ghi chú: Dice valid (gộp pixel theo batch) và Dice test (trung bình từng 
 |G5| Khoảng trống về khả năng khai thác MRI T2W không tiêm thuốc tương phản: Các phương pháp đạt kết quả tốt trên MRI có tiêm thuốc tương phản chưa chắc duy trì được hiệu quả trên MRI T2W tiêu chuẩn không tiêm thuốc, trong khi đây là phương thức có tiềm năng ứng dụng thuận tiện hơn| Bằng chứng: #1, #2, #4, #5, #9, #10| Dự án của nhóm giải quyết bằng cách: Tập trung khai thác ảnh MRI T2W không tiêm thuốc tương phản để nghiên cứu khả năng nhận diện và phân loại mức độ xơ hóa gan.
 
 ### A4. Thẩm định 1 bài quan trọng nhất trong A2 bằng PROBAST+AI
-Bài số #: 1 · Lý do chọn: Gupta et al. (2025) sử dụng MRI T2W tiêu chuẩn để phát hiện xơ hóa gan tiến triển, kết hợp phân vùng gan bằng nnU-Net và phân loại bằng Masked Attention ResNet. Đây là nghiên cứu có phương pháp và dữ liệu đầu vào gần nhất với hướng nghiên cứu của nhóm.
-|Người tham gia và nguồn dữ liệu | không rõ | Sử dụng CirrMRI600+ (374 trường hợp) và dữ liệu nội bộ (187 bệnh nhân mắc bệnh gan mạn tính). Dữ liệu có quy mô tương đối tốt nhưng chưa đủ thông tin để xác định tính đại diện của mẫu và mức độ độc lập giữa các nguồn dữ liệu. (Phần Methods) |
-
+| Miền thẩm định | Mức độ nguy cơ sai lệch | Cơ sở đánh giá | Nhận xét và hạn chế |
+|---|---|---|---|
  |Biến dự báo|Thấp|Sử dụng ảnh MRI T2W tiêu chuẩn làm đầu vào, kết hợp phân vùng gan bằng nnU-Net và trích xuất đặc trưng bằng Masked Attention ResNet. Phương thức thu nhận và xử lý dữ liệu đầu vào được xác định rõ ràng|
 |Kết cục |Cao|Xác định xơ hóa tiến triển theo ngưỡng METAVIR ≥ F3. Tuy nhiên, nhãn trong quá trình huấn luyện dựa trên LSM > 12 kPa, trong khi tập kiểm tra sử dụng xác nhận mô bệnh học, có thể tạo ra sự không nhất quán giữa các phương pháp xác định kết cục | 
 |Phân tích |Cao|Tập kiểm tra chỉ gồm 23 bệnh nhân. Kết quả phân loại đạt AUC 0,811; Accuracy 0,783; Sensitivity 0,778 và Specificity 0,800. Quy mô tập kiểm tra nhỏ và hiệu quả phân loại phụ thuộc vào chất lượng phân vùng gan, làm hạn chế độ tin cậy và khả năng tổng quát hóa của mô hình|
 Tính áp dụng cho bài toán của nhóm: Nghiên cứu có tính áp dụng cao vì sử dụng MRI T2W không tiêm thuốc tương phản, phù hợp với hướng nghiên cứu của nhóm. Quy trình phân vùng gan kết hợp phân loại cung cấp cơ sở tham khảo để xây dựng mô hình học sâu. Tuy nhiên, nghiên cứu chỉ phân loại xơ hóa tiến triển (METAVIR ≥ F3), chưa phân loại đầy đủ các giai đoạn F0–F4. Ngoài ra, tập kiểm tra nhỏ và sự khác biệt về phương pháp xác định nhãn là những hạn chế cần lưu ý khi vận dụng phương pháp vào dự án.
 
 ## B. Kết quả và timeline
-
+### B1. Kết quả hiện có
+| Mô hình | Tập đánh giá (cách chia, n) | Metric chính (giá trị, 95% CI nếu có) | Metric phụ | Nguồn số liệu (file / notebook / W&B) |
+|---|---|---|---|---|
 ### B1. Kết quả hiện có
 |Baseline 1 (Mốc 2)|Tập test CirrMRI600+ gồm 828 lát MRI T2W từ 37 bệnh nhân; trong đó 164 lát thuộc nhóm khỏe mạnh và 664 lát thuộc nhóm xơ gan (31 bệnh nhân)|Dice = 0,9025 ± 0,1760 (toàn bộ test); Dice theo khối bệnh nhân = 0,9513 (37 bệnh nhân). Không có 95% CI|IoU = 0,8522 ± 0,1895; Precision = 0,9066 ± 0,1722; Recall = 0,9136 ± 0,1834. Riêng nhóm xơ gan: Dice từng lát = 0,9006; Dice theo khối bệnh nhân = 0,9482 (31 bệnh nhân). Có 79 lát không chứa gan, mô hình dự đoán nhầm có gan ở 1 lát| Kết quả đánh giá mô hình phân vùng gan trên notebook; bảng tổng hợp kết quả tập test|
 | Mô hình đề xuất (Mốc 3) | Chưa có kết quả đánh giá chính thức trên tập test cho mô hình phân loại mức độ xơ gan. | Chưa có kết quả Accuracy, AUC và F1-score cho bài toán phân loại | Chưa có kết quả Precision, Recall và ma trận nhầm lẫn cho bài toán phân loại.| Notebook huấn luyện và đánh giá mô hình phân loại; chưa có kết quả chính thức.|
