@@ -64,7 +64,6 @@ Tính áp dụng cho bài toán của nhóm: Nghiên cứu có tính áp dụng 
 ### B1. Kết quả hiện có
 | Mô hình | Tập đánh giá (cách chia, n) | Metric chính (giá trị, 95% CI nếu có) | Metric phụ | Nguồn số liệu (file / notebook / W&B) |
 |---|---|---|---|---|
-### B1. Kết quả hiện có
 |Baseline 1 (Mốc 2)|Tập test CirrMRI600+ gồm 828 lát MRI T2W từ 37 bệnh nhân; trong đó 164 lát thuộc nhóm khỏe mạnh và 664 lát thuộc nhóm xơ gan (31 bệnh nhân)|Dice = 0,9025 ± 0,1760 (toàn bộ test); Dice theo khối bệnh nhân = 0,9513 (37 bệnh nhân). Không có 95% CI|IoU = 0,8522 ± 0,1895; Precision = 0,9066 ± 0,1722; Recall = 0,9136 ± 0,1834. Riêng nhóm xơ gan: Dice từng lát = 0,9006; Dice theo khối bệnh nhân = 0,9482 (31 bệnh nhân). Có 79 lát không chứa gan, mô hình dự đoán nhầm có gan ở 1 lát| Kết quả đánh giá mô hình phân vùng gan trên notebook; bảng tổng hợp kết quả tập test|
 | Mô hình đề xuất (Mốc 3) | Chưa có kết quả đánh giá chính thức trên tập test cho mô hình phân loại mức độ xơ gan. | Chưa có kết quả Accuracy, AUC và F1-score cho bài toán phân loại | Chưa có kết quả Precision, Recall và ma trận nhầm lẫn cho bài toán phân loại.| Notebook huấn luyện và đánh giá mô hình phân loại; chưa có kết quả chính thức.|
 
