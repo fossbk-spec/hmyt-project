@@ -63,8 +63,6 @@ Tính áp dụng cho bài toán của nhóm: Nghiên cứu có tính áp dụng 
 ### B1. Kết quả hiện có
 |Baseline 1 (Mốc 2)|Tập test CirrMRI600+ gồm 828 lát MRI T2W từ 37 bệnh nhân; trong đó 164 lát thuộc nhóm khỏe mạnh và 664 lát thuộc nhóm xơ gan (31 bệnh nhân)|Dice = 0,9025 ± 0,1760 (toàn bộ test); Dice theo khối bệnh nhân = 0,9513 (37 bệnh nhân). Không có 95% CI|IoU = 0,8522 ± 0,1895; Precision = 0,9066 ± 0,1722; Recall = 0,9136 ± 0,1834. Riêng nhóm xơ gan: Dice từng lát = 0,9006; Dice theo khối bệnh nhân = 0,9482 (31 bệnh nhân). Có 79 lát không chứa gan, mô hình dự đoán nhầm có gan ở 1 lát| Kết quả đánh giá mô hình phân vùng gan trên notebook; bảng tổng hợp kết quả tập test|
 | Mô hình đề xuất (Mốc 3) | Chưa có kết quả đánh giá chính thức trên tập test cho mô hình phân loại mức độ xơ gan. | Chưa có kết quả Accuracy, AUC và F1-score cho bài toán phân loại | Chưa có kết quả Precision, Recall và ma trận nhầm lẫn cho bài toán phân loại.| Notebook huấn luyện và đánh giá mô hình phân loại; chưa có kết quả chính thức.|
-Compose
-Write to Linh Chi
 
 ### B2. Ablation (Mốc 3)
 
@@ -93,7 +91,7 @@ Mốc: M3 tuần 10 · M4 tuần 12 · Final tuần 15. Cột "Ngày dự kiến
 |-|-|-|-|-|
 |Chia dữ liệu theo bệnh nhân, kiểm tra không rò rỉ|20233772 + 20233735 — đồng thực hiện|M3 tuần 10|Xong|Xong — bảng chia dữ liệu (train 300 BN, valid 36 BN, test 37 BN) và kết quả giao các tập = 0 trong notebook|
 |Huấn luyện và đánh giá U-Net phân vùng gan|20233772 + 20233735 — đồng thực hiện|M3 tuần 10|Xong|Xong — Dice valid 0,9561 (epoch 9); Dice test 0,8994|
-|Lọc lát không có gan, tạo CSV cho phân loại|20233772 + 20233735 — đồng thực hiện|M3 tuần 10|09/11/2026|Đang — đã xác định trên test có 83 lát không có gan (slide Bảng 3); file CSV phân loại [CẦN BẠN XÁC NHẬN đã tạo chưa]|
+|Lọc lát không có gan, tạo CSV cho phân loại|20233772 + 20233735 — đồng thực hiện|M3 tuần 10|09/11/2026|Đang — đã xác định trên test có 83 lát không có gan (slide Bảng 3); file CSV phân loại|
 |Phân loại nhị phân ResNet18 cấu hình A và B|20233772 + 20233735 — đồng thực hiện|M3 tuần 10|Hạn M3 (tuần 10)|Đang — đã thiết kế quy trình (slide mục 4); chưa có kết quả|
 |Calibration, Brier, 95% CI bằng bootstrap theo bệnh nhân|20233772 + 20233735 — đồng thực hiện|M4 tuần 12|Hạn M4 (tuần 12)|Chưa|
 |Grad-CAM kiểm tra lối tắt|20233772 + 20233735 — đồng thực hiện|M4 tuần 12|Hạn M4 (tuần 12)|Chưa|
