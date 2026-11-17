@@ -1,0 +1,13 @@
+# Python 3.14 (xác nhận bằng `python --version` trên máy chạy notebook)
+imbalanced-learn==0.14.2
+ipykernel==7.3.0
+matplotlib==3.10.9
+numpy==2.4.4
+pandas==3.0.2
+plotly==7.0.0
+pywaffle==1.2.0
+scikit-learn==1.9.1
+scikit-plot==0.3.7
+scipy==1.17.1
+seaborn==0.13.2
+shap==0.54.1
