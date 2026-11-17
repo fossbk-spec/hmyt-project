@@ -1,7 +1,7 @@
 {
-  "topic_slug": "REPLACE_VOI_SLUG_DE_TAI",
-  "topic_id": "REPLACE_VOI_MA_DE_TAI_VD_3.4",
-  "group_code": "REPLACE_VOI_MA_NHOM_VD_nhom07",
-  "members": ["MSSV1", "MSSV2", "MSSV3"],
+  "topic_slug": "nhoi_mau_co_tim",
+  "topic_id": "1.2",
+  "group_code": "10",
+  "members": ["202414843", "202414827" ],
   "submitted_at": "YYYY-MM-DD"
 }
