@@ -1,0 +1,53 @@
+item,topic,status,evidence_or_gap
+1,Title,Present,Manuscript title identifies development of cardiac screening.
+2,Abstract,Partial,Abstract contains methods and measured results; no complete V2 performance or all abstract subitems.
+3a,Rationale,Present,I; direct cardiac CXR and fusion literature.
+3b,Intended use,Present,"I and II-A; clinician-facing research triage, not diagnosis."
+3c,Inequality context,Partial,III-C; subgroup performance not measured.
+4,Objectives,Present,I; metadata support and branch comparison.
+5a,Data source,Present,II-A; source release and single-centre design.
+5b,Dates,Present,II-A; source2013–2018 and delayed echo linkage.
+6a,Setting,Present,II-A; CUIMC in United States.
+6b,Eligibility,Partial,II-A and datasheet; full original recruitment not independently audited.
+6c,Treatment,Partial,No treatment-effect inference; transplant/device context limited.
+7,Data preparation,Present,II-B and src code; group-specific quality not evaluated.
+8a,Outcome,Present,II-A; supplied binarySLVH OR DLV; no future-event horizon.
+8b,Outcome assessors,Pending,Qualifications and demographics not independently audited.
+8c,Outcome blinding,Pending,No new source blinding audit.
+9a,Predictor choice,Present,II-B/C; T0-based defaults and prespecified ablations.
+9b,Predictor definition,Partial,Age/sex units known; device timing remains unresolved.
+9c,Predictor assessors,Partial,No new subjective manual measurements; original report extraction unaudited.
+10,Sample size,Partial,Counts stated; formal precision/deployment calculation absent.
+11,Missing data,Present,II-B and datasheet; train-only imputation; source fields complete.
+12a,Data roles,Present,II-A tableI; train-onlygroup CV.
+12b,Transformations,Present,"II-B; scaling, encoding, crop, normalization."
+12c,Model building,Present,"II-C;12 candidates,3groupfolds, AP selection."
+12d,Clustering,Partial,Patient splitting/bootstrap implemented; no multicentre heterogeneity analysis.
+12e,Measures,Present,"II-E; discrimination, operating point, calibration, workload."
+12f,Updating,Partial,V2 redesign and metadata calibration; no external model updating study.
+12g,Predictions,Present,II-B/D and src; frozen pipelines and exact keys.
+13,Imbalance,Present,"II-C/D; balanced ML and weighted BCE, separate calibration."
+14,Fairness,Pending,No subgroup fairness result; no fairness guarantee.
+15,Output,Present,II-D; probability and development constrained threshold.
+16,Development differences,Partial,III-B; historical vsV2 roles distinguished; no external cohort.
+17,Ethics,Partial,Official data-access obligations cited; no fabricated localapproval orwaiver.
+18a,Funding,Pending,All-author funding declaration requires confirmation.
+18b,Conflicts,Pending,All-author financial/conflict declarations require confirmation.
+18c,Protocol,Present,"Versioned source, README and run receipts in package."
+18d,Registration,Partial,No prospective registration evidence was supplied.
+18e,Data availability,Present,"04_Dataset; officialaccess link, licence restrictions and dictionary."
+18f,Code availability,Present,"03_Code; notebook, modules, commands and runtime receipts."
+19,Public involvement,Pending,No involvement evidence supplied; author confirmation required.
+20a,Participant flow,Partial,Roles/counts known; full original exclusions not independently reconstructed.
+20b,Characteristics,Partial,"Age range, image/label counts supplied; no full demographic subgroup table."
+20c,Data comparison,Partial,Historical and development distinction; external cohort unavailable.
+21,Analysis counts,Present,II-A/C and receipts; image/patient counts per role.
+22,Model specification,Partial,Source and metadata objects available privately; V2DL object still pending.
+23a,Performance,Partial,III; metadata bootstrap metrics; fullDL/fusion/subgroup and calibrationparameter CIs missing.
+23b,Heterogeneity,Pending,No site-level comparison; patient resampling only.
+24,Updated model,Partial,Week12metadata retrained; not integrated into realimagefusion.
+25,Interpretation,Present,"III; distinguishes ranking, probability quality and clinical impact."
+26,Limitations,Present,"III-C; delay, selection, reuse, uncertainty, weak metadata."
+27a,Input failure,Present,"Datasheet and source reject invalid paths,keys and labels; cropquality pending."
+27b,User interaction,Partial,Research Colab usage described; no usabilitystudy.
+27c,Next research,Present,"IV; GPU evidence, externalvalidation and clinical evaluation."

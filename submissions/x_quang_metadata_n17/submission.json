@@ -1,11 +1,13 @@
 {
-  "topic_slug": "x_quang_metadata",
-  "topic_id": "CheXchoNet Cardiac Structure Screening based on Machine learning and deep learning",
-  "group_code": "n17",
-  "members": [
-    "202414865",
-    "202414821",
-    "202414845"
-  ],
-  "milestone": "m3"
+    "topic_slug":  "x_quang_metadata",
+    "topic_id":  "CheXchoNet Cardiac Structure Screening based on Machine learning and deep learning",
+    "group_code":  "n17",
+    "members":  [
+                    "202414865",
+                    "202414821",
+                    "202414845"
+                ],
+    "submitted_at":  "2026-11-22",
+    "milestone":  "final",
+    "repo_link_optional":  "https://github.com/pthaianh2006-rgb/hmyt-project"
 }

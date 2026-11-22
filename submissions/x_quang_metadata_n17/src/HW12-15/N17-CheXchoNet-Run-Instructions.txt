@@ -1,0 +1,11 @@
+N17 CODE AND REPRODUCTION
+1. Create a separate Python environment and install requirements-metadata.txt.
+2. Run python -m unittest discover -s tests -v from this directory.
+3. Run metadata development only:
+   python src/metadata_optimization.py --metadata /private/path/metadata_with_split.csv --output /private/path/new_week12_run
+   python src/metadata_calibration_audit.py --metadata /private/path/metadata_with_split.csv --run-dir /private/path/new_week12_run
+4. For image/fusion V2, open N17-CheXchoNet-V2-ML-Support-DL-Colab.ipynb in Colab, enable GPU and run in order. Existing dataset can remain on Drive. This V2 GPU run has NOT been completed.
+5. Save new runs privately to outputs_ml_support_dl_v2/<RUN_ID>/. Keep models, role manifests and examination predictions out of the public class repository.
+6. results/historical_aggregate contains the three earlier exports. results/v2_baseline_aggregate covers 17Nov metadata selection. results/week12_aggregate covers22Nov optimization/calibration development. Never merge these as one test table.
+7. Scripts need the same labelled cohort and preserved historical split. Cross-validation occurs inside train patients only. The score audit uses branch_val and remains a development analysis.
+8. Local warnings from sklearn1.6.1/scipy1.18.1 about the iprint solver option were observed; fits and checks completed. Exact runtime is recorded in the receipts, not inferred for the old Colab run.

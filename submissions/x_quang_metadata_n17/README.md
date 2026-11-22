@@ -1,132 +1,86 @@
-# Cardiac structure screening from chest X rays
+# CheXchoNet cardiac structure screening
 
 Based on Machine learning and deep learning
 
-Group **N17**. Members: **202414865, 202414821, 202414845**.
+Group N17. Members: 202414821, 202414865, 202414845.
 
-The project combines a five-feature metadata model with EfficientNet-B0 for
-paired chest X-ray examinations. Logistic regression combines their two
-probabilities. The target is the CheXchoNet composite label for severe left
-ventricular hypertrophy or a dilated left ventricle, not all cardiovascular disease.
+## HW12–15 submission
 
-## Current results
+Snapshot: 22 November 2026. The project pairs chest X-rays with metadata from
+the same examination to screen for severe left ventricular hypertrophy or
+left ventricular dilation. It does not predict all cardiovascular diseases.
 
-The current aggregate test export gives the following results. These are
-image/examination-level scores from the supplied Colab output, not the earlier
-local metadata validation measurements.
+- Current slides: [HW12–15 project review](slides/N17-CheXchoNet-HW12-15-Project-Review-Public.pptx).
+- Current [IEEE Word report](report/HW12-15/N17-CheXchoNet-IEEE-Report-Public.docx) and [readable report](report/N17-CheXchoNet-Report.md).
+- [Data and reporting audit](report/HW12-15/N17-CheXchoNet-Data-and-Reporting-Audit-Public.docx) and [TRIPOD+AI evidence map](report/HW12-15/N17-CheXchoNet-TRIPOD-AI-Evidence-Map.csv).
+- [V2 source, notebooks, tests and aggregate results](src/HW12-15/).
+- [Dataset access and summary](docs/data_access/).
+- [Reference PDFs and source inventory](report/HW12-15/references/).
 
-| Model | Precision | Recall | F2 | ROC AUC | Average precision |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Metadata ML | 0.1427 | 0.9986 | 0.4540 | 0.6059 | 0.1919 |
-| EfficientNet-B0 | 0.2425 | 0.7025 | 0.5093 | 0.7381 | 0.3141 |
-| ML and DL fusion | 0.2309 | 0.7727 | 0.5258 | 0.7413 | 0.3172 |
+Earlier Week 7/M3 presentations, source files and results remain as historical
+artifacts. Use the HW12–15 paths above for the current submission.
 
-Fusion increases recall by 7.01 percentage points versus the image branch, with
-a 1.17-point precision decrease. The small AP increase does not establish
-statistical significance. Validation AP peaks in the first of four recorded
-epochs, then decreases. The notebook fits fusion and selects its threshold on
-the same validation observations; this limitation remains in the supplied run.
+## Measured results and limits
 
-The three original Colab exports are preserved byte-for-byte in `results/`.
-`colab_results_receipt.json` records their hashes and the consistency checks.
-Per-image predictions, checkpoint hashes and the exact Colab environment were
-not supplied, so independent AUROC/AP recalculation, patient-bootstrap confidence
-intervals and checkpoint verification are still outstanding.
+| Experiment | AP | ROC-AUC | F2 | Scope |
+| --- | ---: | ---: | ---: | --- |
+| Historical metadata ML | 0.1919 | 0.6059 | 0.4540 | Earlier Colab test export |
+| Historical EfficientNet-B0 | 0.3141 | 0.7381 | 0.5093 | Earlier Colab test export |
+| Historical late fusion | 0.3172 | 0.7413 | 0.5258 | Earlier Colab test export |
+| Week 12 selected metadata LR | 0.1462 | 0.5220 | 0.2000 | Development audit only |
 
-## Submission status
+The Week 12 search compared 12 candidates with three patient-group folds within
+the training partition. It selected age-only logistic regression, then refitted
+the classifier. Calibration and threshold fitting used separate patient groups.
+On the previously viewed development group, calibrated Brier score was 0.1159,
+recall 0.2170 and specificity 0.8133. The audit includes 500 whole-patient
+bootstrap resamples, conditional on the fitted model. These development values
+are not independent final-test scores or a direct comparison with the old run.
 
-This is a prepared **M3** snapshot, not a claim that every final rubric item is
-complete. As confirmed by the submitting team, `topic_id` is the project title:
-`CheXchoNet Cardiac Structure Screening based on Machine learning and deep learning`.
-The descriptive slug is `x_quang_metadata`. This custom project does not have a
-topic-specific profile in the class repository, so its advisory review uses the
-general rubric. It is not topic 3.4, the separate 299-patient tabular heart-failure lab.
+The team confirmed that V2 GPU training has not run. There are no new V2 DL or
+fusion results. Historical fusion reused its validation observations for fitting
+and threshold selection; only three aggregate Colab exports are available
+locally, without the original weights or examination-level predictions.
+The small historical fusion gain has no demonstrated statistical significance.
+Clinical utility, external validation and subgroup evidence remain unestablished.
 
-Individual CRediT roles also require confirmation by the members. No role or
-contribution percentage has been invented.
+## Reproduction
 
-## Contents
+1. Obtain [CheXchoNet 1.0.0](https://physionet.org/content/chexchonet/1.0.0/)
+   through PhysioNet and comply with its access terms and licence.
+2. Open `src/HW12-15/N17-CheXchoNet-V2-ML-Support-DL-Colab.ipynb` in Colab.
+   Use a GPU and the already uploaded official dataset under your private Drive.
+3. For metadata-only reproduction, install `src/HW12-15/requirements-metadata.txt`.
+   From `src/HW12-15`, run `python -m unittest discover -s tests -v`, then follow
+   `N17-CheXchoNet-Run-Instructions.txt` for the two metadata scripts.
+4. Keep patient rows, images, role manifests, predictions, model weights and
+   credentials private. Public results in this submission contain aggregates only.
 
-- `report/N17-CheXchoNet-Report.md`: readable report, including measured results and limitations.
-- `report/N17-CheXchoNet-Report-Public.docx`: report in the retained HUST format.
-- `report/figures/`: aggregate figures and the model architecture.
-- `src/`: Colab notebook, data utilities, and local reproducibility helpers.
-- `slides/`: HUST presentation updated with the Colab exports.
-- `results/`: aggregate evidence only, without patient records.
-- `docs/`: data access, AI disclosure, and evidence limitations.
-- `tests/`: synthetic unit tests for pairing and partition separation.
+The audited cohort contains 71,589 images from 24,689 patients, including 9,861
+positive images. Splits keep each patient in one role. ML and DL predictions
+pair by patient ID and CXR filename. V2 defaults to age and sex; the separate
+Week 12 selection retained age only. Label-defining echo measurements are excluded.
 
-## Dataset and access
+## Reporting status
 
-Use [CheXchoNet version 1.0.0](https://physionet.org/content/chexchonet/1.0.0/),
-DOI [10.13026/kp08-ws25](https://doi.org/10.13026/kp08-ws25).
-Obtain access through the official source and comply with its current terms.
-Read the dataset's own `LICENSE.txt`. This submission does not redistribute
-X-rays, metadata rows, authentication cookies or access credentials.
+`milestone: final` identifies the requested review stage, not completion of all
+scientific validation. The project title is the registered topic identifier;
+the custom slug `x_quang_metadata` uses the general rubric.
 
-The audited local manifest has 71,589 images from 24,689 patients. Patient-level
-partitions contain 17,282 training, 3,703 validation and 3,704 test patients.
-Multiple images from one patient stay in a single partition. The five metadata
-predictors are age, sex, heart transplant, lung transplant, and pacemaker/ICD.
-Echo measurements that define the labels are excluded as predictors.
+References 01 (Bhave 2024) and 02 (Huang 2020) have official source links but
+their PDFs could not be downloaded in this environment. The inventory states
+this explicitly. Reference 04 is a dataset record. Member contributions,
+funding/conflicts and Mendeley account actions have not been independently
+confirmed. See the audit for remaining reporting gaps.
 
-## Reproduce the Colab workflow
-
-1. Place the officially obtained dataset ZIP or extracted directory in
-   `MyDrive/Hoc_may_2_0/DL_Xray/CheXchoNet/` on your own Google Drive.
-2. Open `src/N17_CheXchoNet_ML_Support_DL_Colab.ipynb` in Colab and select a GPU.
-3. Run the cells in order. Authorise Drive mounting in your own account. The
-   notebook contains the data helper functions and does not require an external
-   helper upload. Never add a password or token to its cells.
-4. The notebook writes to
-   `MyDrive/Hoc_may_2_0/DL_Xray/CheXchoNet/outputs_ml_support_dl/`.
-5. Archive `test_metrics.csv`, `dl_training_history.csv`,
-   `selected_thresholds.json`, the model checkpoint and test predictions privately.
-   Do not upload row-level predictions or large weights to this class repository.
-6. Record the runtime versions and checkpoint/split hashes. The exported notebook
-   is an unexecuted source copy; the three CSV/JSON exports are the available
-   evidence of the reported Colab run.
-
-The notebook checks missing packages but does not lock Colab's installed versions.
-`requirements-colab-target.txt` gives a proposed compatible target, not a recovered
-lockfile for the historical Colab run. The historical Colab environment cannot
-be reconstructed from three aggregate files alone.
-
-## Local checks
-
-Use Python 3.12 and install the metadata-only environment separately from Colab:
+Code and documentation received AI assistance, disclosed in
+`docs/ai_disclosure_log.md`. The team remains responsible for checking all claims.
+## Local smoke test
 
 ```powershell
-python -m pip install -r requirements.txt
+cd src/HW12-15
+python -m pip install -r requirements-metadata.txt
 python -m unittest discover -s tests -v
-python src/verify_colab_exports.py --results results
 ```
 
-To repeat only the metadata baseline, pass your private manifest path and an
-output directory outside the submission:
-
-```powershell
-python src/reproduce_metadata.py --metadata "D:\Hoc_may_2_0\DL_Xray\CheXchoNet\processed\metadata_with_split.csv" --output-dir "D:\Hoc_may_2_0\private_reproduction"
-```
-
-This helper computes validation scores only and never evaluates test outcomes.
-The local package versions are pinned to the inspected environment; they are
-not evidence of the Colab package versions.
-
-From the class repository root:
-
-```powershell
-python scripts/validate_submission.py submissions/x_quang_metadata_n17
-python scripts/review_project.py submissions/x_quang_metadata_n17 --milestone m3
-```
-
-If the instructor later requests a different slug, rename the folder and update
-`submission.json` and those commands consistently. A technical validator pass
-does not establish that every rubric criterion is satisfied.
-
-## References and integrity
-
-Report references are in `report/references.bib`. The report and
-`docs/ai_disclosure_log.md` disclose AI assistance. Do not publish dataset files,
-patient identifiers, full student names, secrets, or files larger than 10 MB.
-The research prototype has not demonstrated clinical deployment readiness.
+The test uses synthetic records. Actual training additionally requires the official private dataset.

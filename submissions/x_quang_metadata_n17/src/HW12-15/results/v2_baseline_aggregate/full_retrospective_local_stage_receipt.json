@@ -1,0 +1,19 @@
+{
+  "scope": "metadata only; branch_val selection metrics are not independent test performance",
+  "selected_model": "LogisticRegression",
+  "features": [
+    "age_scaled",
+    "sex_binary",
+    "heart_transplant",
+    "lung_transplant",
+    "pacemaker_or_icd"
+  ],
+  "model_sha256": "5b515b57ce481357d247943c903bcea46792967132313acf10030c208edba715",
+  "manifest_sha256": "aa4a5f192340a4fd6650d84fbe31e73597f0bff9b7ec4adefa847db09c70c7a2",
+  "source_sha256": {
+    "fusion_protocol.py": "7d2c40eb3a74516bb8c96e8249247d85aebb357a3ed81e65163a48c07da29702"
+  },
+  "gpu_training_done": false,
+  "fusion_run_done": false,
+  "historical_test_scored": false
+}

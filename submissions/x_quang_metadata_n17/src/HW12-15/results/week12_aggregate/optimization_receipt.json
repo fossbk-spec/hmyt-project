@@ -1,0 +1,44 @@
+{
+  "measured_on": "2026-11-22",
+  "scope": "metadata development only; not V2 DL/fusion/test",
+  "selection": "3-fold StratifiedGroupKFold in historical train; candidate feature sets prespecified",
+  "search_candidates": 12,
+  "training_images": 50233,
+  "training_patients": 17282,
+  "branch_val_images": 2548,
+  "branch_val_patients": 925,
+  "selected": {
+    "model": "LR",
+    "parameter": "0.1",
+    "feature_set": "age_only",
+    "features": "age_scaled",
+    "cv_mean_ap": 0.15499144197273387,
+    "cv_std_ap": 0.004851344022158406,
+    "fold_1_ap": 0.15936263399125714,
+    "fold_2_ap": 0.15738545495168257,
+    "fold_3_ap": 0.14822623697526188
+  },
+  "branch_val_ap": 0.14620459507984507,
+  "branch_val_roc_auc": 0.5219921417723133,
+  "branch_val_raw_brier": 0.24738195010984868,
+  "elapsed_seconds": 4.952999999994063,
+  "historical_test_scored": false,
+  "permutation_scope": "descriptive AP decrease on branch_val; correlated predictors and repeated images limit interpretation",
+  "model_integrated_into_v2_fusion": false,
+  "metadata_sha256": "1a4546e113517ddcf546f6c0bf844f8374245d4220b0601d29570032ef6795d7",
+  "source_sha256": "784ad805fb61cc3e7845bb032a2f01f9989326e9eb3e86ba73586e2fe84b044f",
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.6.1",
+      "joblib": "1.6.0",
+      "torch": null,
+      "torchvision": null,
+      "pillow": "12.3.0"
+    }
+  }
+}

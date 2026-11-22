@@ -1,0 +1,6 @@
+{
+  "ml_model": "HistGradientBoosting",
+  "ml_threshold": 0.07,
+  "dl_threshold": 0.5549999999999999,
+  "fusion_threshold": 0.42999999999999994
+}

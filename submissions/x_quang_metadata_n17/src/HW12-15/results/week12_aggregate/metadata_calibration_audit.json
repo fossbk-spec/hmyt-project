@@ -1,0 +1,97 @@
+{
+  "scope": "development branch_val; no independent test and no DL/fusion evaluation",
+  "calibrator_fitting_role": "calibration",
+  "threshold_fitting_role": "threshold",
+  "threshold": {
+    "threshold": 0.16752063093862277,
+    "selection_role": "threshold",
+    "minimum_specificity": 0.8,
+    "selection_specificity": 0.815256875973015,
+    "selection_f2": 0.2020525978191148,
+    "note": "Development constraint, not a clinical recommendation or guarantee on evaluation data"
+  },
+  "metrics": {
+    "images": 2548,
+    "positive_images": 341,
+    "threshold": 0.16752063093862277,
+    "precision": 0.1522633744855967,
+    "recall": 0.21700879765395895,
+    "specificity": 0.8133212505663797,
+    "f1": 0.17896009673518742,
+    "f2": 0.2,
+    "roc_auc": 0.5219921417723133,
+    "average_precision": 0.14620459507984507,
+    "brier": 0.11589638426897429,
+    "log_loss": 0.39302919599943276,
+    "referral_fraction": 0.19073783359497645,
+    "tn": 1795,
+    "fp": 412,
+    "fn": 267,
+    "tp": 74,
+    "accuracy": 0.7335164835164835,
+    "calibration_diagnostics": {
+      "calibration_in_the_large": -0.061938799098887797,
+      "calibration_intercept": -0.7471329177248358,
+      "calibration_slope": 0.6177696147219779,
+      "diagnostic_only": "Fitted for assessment; does not update the prediction model",
+      "bounded_fit": "Coefficients bounded to [-30,30]; inspect separation/constant predictions before interpretation"
+    },
+    "raw_brier": 0.24738195010984868
+  },
+  "patient_bootstrap": {
+    "method": "Paired percentile patient-cluster bootstrap; image-weighted estimand",
+    "repeats_requested": 500,
+    "repeats_valid": 500,
+    "seed": 42,
+    "ci95": {
+      "Metadata": {
+        "precision": [
+          0.1097396694214876,
+          0.20095271217251331
+        ],
+        "recall": [
+          0.14198546241102644,
+          0.30050087531608627
+        ],
+        "specificity": [
+          0.7783146610753054,
+          0.8446901051560437
+        ],
+        "f1": [
+          0.1270737753295298,
+          0.23038194444444438
+        ],
+        "f2": [
+          0.13711613291529032,
+          0.26741782711912493
+        ],
+        "roc_auc": [
+          0.4546914608137437,
+          0.5881972675583389
+        ],
+        "average_precision": [
+          0.11659396708158368,
+          0.18696488212790796
+        ],
+        "brier": [
+          0.09268859450564076,
+          0.14234041101357323
+        ],
+        "referral_fraction": [
+          0.16093137990278472,
+          0.2223953181668315
+        ]
+      }
+    },
+    "fusion_minus_dl_ci95": {},
+    "limitation": "Conditional on fitted models; no training variability or guarantee against prior test reuse"
+  },
+  "limitations": [
+    "branch_val previously viewed; interpretation remains developmental",
+    "Brier change does not alone prove calibrated probabilities",
+    "500 conditional patient bootstrap resamples; training uncertainty not included",
+    "Calibration slope/intercept have no CI in this audit; raw predictions and weights remain private"
+  ],
+  "source_sha256": "7c9c6bd3569100df2e5fcefc23271e4f7ab8a5c526d25f43b968f491c883bdcf",
+  "model_sha256": "d98cf199b7985a1ce937f436f49237ebc8ff2ab4373709a03ce0ef025fdf8277"
+}

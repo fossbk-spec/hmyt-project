@@ -30,3 +30,14 @@ the three aggregate files. No numerical result or contributor role is fabricated
 
 No passwords, access keys, authentication tokens or private clinical data belong
 in prompts, notebooks, the public repository or this log.
+
+## 22 November 2026 update
+
+AI assisted with the HW12–15 IEEE report, HUST presentation, reference inventory,
+data/reporting audit and public submission packaging. New metadata optimization
+and calibration scripts ran locally on 22 November; their aggregate receipts
+are included. The team explicitly confirmed that V2 has not run on Colab.
+No new DL/fusion result is claimed. Historical Colab aggregates are preserved
+separately. Public Office copies replace student names with identifiers.
+The new development audit has conditional patient-bootstrap intervals; this does
+not supply missing uncertainty or prediction-level evidence for the old run.
