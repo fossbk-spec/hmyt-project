@@ -1,0 +1,103 @@
+{
+  "images": 71589,
+  "patients": 24689,
+  "raw_rows": 71589,
+  "feature_columns": [
+    "patient_id",
+    "cxr_filename",
+    "cxr_time_offset",
+    "cxr_year",
+    "cxr_path",
+    "cxr_pixel_spacing_x",
+    "cxr_pixel_spacing_y",
+    "age",
+    "sex",
+    "ivsd",
+    "lvpwd",
+    "lvidd",
+    "slvh",
+    "dlv",
+    "composite_slvh_dlv",
+    "heart_transplant",
+    "lung_transplant",
+    "pacemaker_or_icd",
+    "sex_binary",
+    "age_scaled",
+    "split"
+  ],
+  "missing_image_files": 0,
+  "disk_images": 71589,
+  "duplicate_keys": 0,
+  "patients_in_multiple_splits": 0,
+  "labels": {
+    "slvh": {
+      "positive": 6191,
+      "prevalence": 0.08647976644456551
+    },
+    "dlv": {
+      "positive": 4343,
+      "prevalence": 0.060665744737319977
+    },
+    "composite_slvh_dlv": {
+      "positive": 9861,
+      "prevalence": 0.13774462557096762
+    }
+  },
+  "splits": [
+    {
+      "split": "test",
+      "images": 10386,
+      "patients": 3704,
+      "positive": 1412,
+      "prevalence": 0.1359522434045831
+    },
+    {
+      "split": "train",
+      "images": 50233,
+      "patients": 17282,
+      "positive": 6840,
+      "prevalence": 0.13616546891485676
+    },
+    {
+      "split": "val",
+      "images": 10970,
+      "patients": 3703,
+      "positive": 1609,
+      "prevalence": 0.14667274384685505
+    }
+  ],
+  "features": {
+    "age": {
+      "missing": 0,
+      "unique": 73
+    },
+    "sex": {
+      "missing": 0,
+      "unique": 2
+    },
+    "heart_transplant": {
+      "missing": 0,
+      "unique": 2
+    },
+    "lung_transplant": {
+      "missing": 0,
+      "unique": 2
+    },
+    "pacemaker_or_icd": {
+      "missing": 0,
+      "unique": 2
+    }
+  },
+  "age_range": [
+    18.0,
+    90.0
+  ],
+  "sex_counts": {
+    "F": 37289,
+    "M": 34300
+  },
+  "label_consistency_errors": 0,
+  "pos_weight": 6.344005847953216,
+  "notebook_executed_code_cells": 0,
+  "notebook_output_count": 0
+}

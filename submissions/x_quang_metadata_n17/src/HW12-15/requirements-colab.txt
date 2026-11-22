@@ -1,0 +1,4 @@
+-r requirements-metadata.txt
+torch>=2.3
+torchvision>=0.18
+pillow>=10

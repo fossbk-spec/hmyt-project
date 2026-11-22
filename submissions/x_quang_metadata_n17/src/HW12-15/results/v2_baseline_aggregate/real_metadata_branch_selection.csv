@@ -1,0 +1,5 @@
+feature_set,model,selection_role,images,average_precision,roc_auc
+age_sex,LogisticRegression,branch_val,2548,0.1354840237168486,0.5002823593817061
+age_sex,HistGradientBoosting,branch_val,2548,0.1330373566050459,0.4945115979946504
+full_retrospective,LogisticRegression,branch_val,2548,0.1912033553840041,0.6419769408719523
+full_retrospective,HistGradientBoosting,branch_val,2548,0.1860527448435894,0.599686149242546

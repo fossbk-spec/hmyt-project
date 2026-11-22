@@ -1,0 +1,42 @@
+N17 REFERENCE INVENTORY
+Numbering matches the IEEE manuscript. Dataset item04 is an online data release, not a research paper.
+
+[01] Bhave 2024
+DOI: 10.1093/eurheartj/ehad782
+Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC11156488/
+PDF: PDF DOWNLOAD BLOCKED - add the original PDF before final upload
+
+[02] Huang 2020
+DOI: 10.1038/s41746-020-00341-z
+Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC7567861/
+PDF: PDF DOWNLOAD BLOCKED - add the original PDF before final upload
+
+[03] Pal 2025
+DOI: 10.3390/biomedicines13092140
+Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC12467770/
+PDF: 03_Pal_2025.pdf
+
+[04] CheXchoNet dataset 2024
+DOI: 10.13026/kp08-ws25
+Source: https://physionet.org/content/chexchonet/1.0.0/
+PDF: ONLINE DATASET RECORD
+
+[05] Tan and Le 2019
+DOI: Not assigned in the cited PMLR record
+Source: https://proceedings.mlr.press/v97/tan19a.html
+PDF: 05_Tan_2019.pdf
+
+[06] Van Calster 2019
+DOI: 10.1186/s12916-019-1466-7
+Source: https://doi.org/10.1186/s12916-019-1466-7
+PDF: 06_Van_Calster_2019.pdf
+
+[07] Collins 2024
+DOI: 10.1136/bmj-2023-078378
+Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC11019967/
+PDF: 07_Collins_2024.pdf
+
+[08] Moons 2025
+DOI: 10.1136/bmj-2024-082505
+Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC11931409/
+PDF: 08_Moons_2025.pdf

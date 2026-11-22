@@ -1,0 +1,7 @@
+CHEXCHONET VERSION 1.0.0
+Official source https://physionet.org/content/chexchonet/1.0.0/
+DOI https://doi.org/10.13026/kp08-ws25
+Use the official access process and licence/DUA. This package does not redistribute the raw or processed patient records, X-rays, predictions or model weights.
+The already uploaded official ZIP can stay under MyDrive/Hoc_may_2_0/DL_Xray/CheXchoNet/. Do not upload it again if it is already there.
+Read the datasheet and data dictionary in ../02_Report/N17-CheXchoNet-Data-and-Reporting-Audit.docx.
+The included dataset summary and hashes are aggregate evidence, not the training dataset.

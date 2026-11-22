@@ -1,0 +1,19 @@
+{
+  "verified_on": "2026-11-17",
+  "unit_tests_passed": 11,
+  "synthetic_tests_are_not_model_performance": true,
+  "notebooks_schema_and_code_cell_syntax": "PASS",
+  "real_metadata_runs": [
+    "age_sex",
+    "full_retrospective"
+  ],
+  "evaluation_role": "branch_val only; model-selection data, not an independent evaluation",
+  "dl_training_executed_locally": false,
+  "dl_checkpoint_resume_executed_locally": false,
+  "image_inference_executed_locally": false,
+  "fusion_on_real_images_executed_locally": false,
+  "reason": "Local environment has no torch/torchvision; Colab GPU run required",
+  "historical_test_scored_by_v2_locally": false,
+  "observed_local_warning": "sklearn 1.6.1 / scipy 1.18.1: OptimizeWarning unknown iprint option; tests and fits completed; exact environment saved with local runs",
+  "runtime_versions_for_future_colab_run": "Will be captured by the notebook; not known until run"
+}

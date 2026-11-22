@@ -1,0 +1,52 @@
+{
+  "release": "CheXchoNet1.0.0",
+  "images": 71589,
+  "patients": 24689,
+  "positive_images": 9861,
+  "roles": [
+    {
+      "role": "branch_val",
+      "images": 2548,
+      "patients": 925,
+      "positive_images": 341,
+      "prevalence": 0.13383045525902668
+    },
+    {
+      "role": "calibration",
+      "images": 2254,
+      "patients": 741,
+      "positive_images": 314,
+      "prevalence": 0.13930789707187222
+    },
+    {
+      "role": "fusion_fit",
+      "images": 3956,
+      "patients": 1296,
+      "positive_images": 669,
+      "prevalence": 0.16911021233569262
+    },
+    {
+      "role": "historical_test",
+      "images": 10386,
+      "patients": 3704,
+      "positive_images": 1412,
+      "prevalence": 0.1359522434045831
+    },
+    {
+      "role": "threshold",
+      "images": 2212,
+      "patients": 741,
+      "positive_images": 285,
+      "prevalence": 0.12884267631103075
+    },
+    {
+      "role": "train",
+      "images": 50233,
+      "patients": 17282,
+      "positive_images": 6840,
+      "prevalence": 0.13616546891485676
+    }
+  ],
+  "raw_manifest_sha256": "1a4546e113517ddcf546f6c0bf844f8374245d4220b0601d29570032ef6795d7",
+  "no_row_level_data_in_package": true
+}
