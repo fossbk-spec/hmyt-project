@@ -1,7 +1,8 @@
 {
   "topic_slug": "Breast Cancer",
-  "topic_id": "",
-  "group_code": "N33",
+  "topic_id": "nhom33",
+  "group_code": "nhom33",
   "members": ["202414830", "202414846"],
-  "submitted_at": "2026-11-9"
+  "submitted_at": "2026-11-9",
+  "milestone": "m1"
 }
