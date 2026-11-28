@@ -56,7 +56,7 @@ Ghi chú: Dice valid (gộp pixel theo batch) và Dice test (trung bình từng 
 | Mã | Khoảng trống | Bằng chứng | Dự án của nhóm giải quyết bằng cách nào |
 |---|---|---|---|
 | G1 | Khả năng tổng quát hóa: phần lớn nghiên cứu dùng MRI một trung tâm và đánh giá trên tập chia nội bộ, chưa chứng minh trên nguồn dữ liệu độc lập | #1, #2, #3, #4, #5, #7, #8, #10, #11 | Dự án **không giải quyết trực tiếp** khoảng trống này vì cũng chỉ dùng CirrMRI600+ (một trung tâm). Nhóm chỉ giảm rủi ro rò rỉ nội bộ: dùng đúng split chính thức theo bệnh nhân, kiểm tra giao các tập = 0, và nêu rõ đây là hạn chế |
-| G2 | Phân loại chi tiết mức độ xơ gan trên MRI T2W: các nghiên cứu T2W chủ yếu phát hiện xơ gan hoặc xơ hóa tiến triển; bài phân loại mức độ trên T2W (CirrGuide, Zeng) cho hiệu năng còn thấp, đặc biệt lớp mức vừa (F1 = 0,2979 ở CirrGuide) | #1, #2, #3, #5, #8 | Tái hiện CirrGuide phân loại 3 mức (nhẹ, vừa, nặng) theo nhãn CirrMRI600+ (đánh giá hình ảnh, không phải thang METAVIR F0–F4), báo cáo F1 từng lớp để theo dõi lớp mức vừa. Nhóm không mở rộng sang 4 lớp |
+| G2 | Phân loại chi tiết mức độ xơ gan trên MRI T2W: các nghiên cứu T2W chủ yếu phát hiện xơ gan hoặc xơ hóa tiến triển; bài phân loại mức độ trên T2W (CirrGuide, Zeng) cho hiệu năng còn thấp, đặc biệt lớp mức vừa (F1 = 0,2979 ở CirrGuide) | #1, #2, #3, #5, #8 | Nhóm ưu tiên tái hiện CirrGuide với bài toán phân loại 3 mức độ nhẹ, vừa và nặng trên nhóm bệnh nhân xơ gan. Theo góp ý của giảng viên, nhóm sẽ bổ sung đánh giá phân loại nhị phân và 4 lớp theo phạm vi yêu cầu của môn học nếu được xác nhận. Kết quả tái hiện 3 lớp được dùng làm mốc đối chiếu trực tiếp với CirrGuide. |
 | G3 | Ảnh hưởng của phân vùng gan đến phân loại: sai số phân vùng có thể ảnh hưởng đặc trưng đầu vào, nhưng chưa được khảo sát đầy đủ | #1, #2, #3, #4, #8, #11 | Dùng mask mềm của giai đoạn 1 làm tiền đề cho giai đoạn 2 đúng như CirrGuide; làm ablation theo Bảng 4 của bài (không mask, mask cứng, mask mềm, chỉ đặc trưng toàn cục); thêm phân tích theo chất lượng Dice của từng bệnh nhân (CirrGuide chưa thử nhiễu mask) |
 | G4 | Độ tin cậy và tính nhất quán đánh giá: một số bài báo cáo độ chính xác rất cao nhưng trộn nhiều phương thức ảnh, mẫu nhỏ hoặc chưa rõ tính độc lập giữa các tập | #7, #9, #10, #11 | Dữ liệu có nguồn gốc xác định, chia theo bệnh nhân, báo cáo Accuracy, macro F1, F1 từng lớp, QWK, MAE (theo CirrGuide), thêm AUC, calibration, Brier và 95% CI bootstrap theo bệnh nhân |
 | G5 | Khai thác MRI T2W tiêu chuẩn: các phương pháp tốt trên MRI có tiêm thuốc tương phản chưa chắc duy trì được trên T2W | #1, #2, #3, #5, #6, #10, #11 | Tập trung vào T2W 2D của CirrMRI600+ giống CirrGuide |
@@ -80,13 +80,17 @@ Tính áp dụng cho bài toán của nhóm: **cao** về phương pháp, vì nh
 
 ### B1. Kết quả hiện có
 
-Số liệu Baseline 1 dưới đây chạy với bước tiền xử lý cũ; nhóm đang tiền xử lý lại theo CirrGuide, nếu chạy lại thì cập nhật số ở đây. Số liệu phân vùng dùng **một tập test duy nhất**: 902 lát = 664 lát nhóm xơ gan (31 bệnh nhân) + 238 lát nhóm khỏe (6 bệnh nhân); trong 238 lát khỏe có 155 lát có gan và 83 lát không có gan; mô hình dự đoán nhầm có gan ở 6 trong 83 lát này. Vậy có 664 + 155 = 819 lát có gan. [Nhóm đối chiếu lại bằng `len(test_df)` và số lát có `mask.sum() == 0` trong notebook trước khi nộp.]
+Hiện tại, nhóm đã hoàn thành đánh giá mô hình Baseline 1 (U-Net phân vùng gan) trên tập test CirrMRI600+ theo cách chia ở mức bệnh nhân. Các kết quả này được thực hiện với pipeline tiền xử lý phiên bản cũ, **chưa phải kết quả của pipeline tái hiện CirrGuide**. Nhóm đang thực hiện lại các bước tiền xử lý theo phương pháp của CirrGuide, bao gồm crop, resize về 256 × 256, chuẩn hóa và augmentation đồng bộ giữa ảnh MRI và mask. Vì vậy, kết quả của pipeline mới sẽ được cập nhật sau khi hoàn thành huấn luyện và đánh giá.
+
+**Thông tin tập test của Baseline 1:** Tổng cộng 902 lát từ 37 bệnh nhân, gồm 664 lát của 31 bệnh nhân xơ gan và 238 lát của 6 bệnh nhân khỏe mạnh. Trong 238 lát khỏe mạnh, có 155 lát chứa gan và 83 lát không có gan. Như vậy, tập test có tổng cộng 819 lát chứa gan và 83 lát không có gan. Mô hình Baseline 1 dự đoán nhầm có gan ở 6/83 lát không có gan.
 
 | Mô hình | Tập đánh giá (cách chia, n) | Metric chính (giá trị, 95% CI nếu có) | Metric phụ | Nguồn số liệu |
 |---|---|---|---|---|
-| Baseline 1 (Mốc 2): U-Net phân vùng gan | Tập test CirrMRI600+ theo bệnh nhân: 902 lát từ 37 bệnh nhân (31 xơ gan, 6 khỏe); 819 lát có gan, 83 lát không có gan | Dice trung bình từng lát, toàn bộ test = 0,9025 ± 0,1760; trên 819 lát có gan = 0,8994; Dice theo khối bệnh nhân = 0,9513 (37 BN). Không có 95% CI | IoU toàn bộ test = 0,8522 ± 0,1895; Precision = 0,9066 ± 0,1722; Recall = 0,9136 ± 0,1834. Trên 819 lát có gan: IoU 0,8476; Precision 0,9256; Recall 0,9116. Riêng nhóm xơ gan: Dice từng lát 0,9006; Dice theo khối bệnh nhân 0,9482 (31 BN). Dự đoán nhầm có gan ở 6/83 lát không có gan | Notebook đánh giá mô hình phân vùng gan; bảng tổng hợp kết quả tập test |
-| CirrGuide-Seg (ResNet50 + Attention U-Net, Mốc 3) | Cùng tập test | Chưa có kết quả chính thức | Chưa có | Notebook huấn luyện phân vùng giai đoạn 1; đang viết code |
-| CirrGuide-Cls 3 lớp (Mốc 3) | Tập test chính thức: 31 BN, 664 lát | Chưa có Accuracy, macro F1 | Chưa có F1 từng lớp, QWK, MAE, ma trận nhầm lẫn, kết quả theo bệnh nhân | Notebook huấn luyện và đánh giá mô hình phân loại; chưa có kết quả |
+| **Baseline 1 (Mốc 2): U-Net phân vùng gan — pipeline tiền xử lý cũ** | Tập test CirrMRI600+ chia theo bệnh nhân: 902 lát từ 37 bệnh nhân (31 xơ gan, 6 khỏe mạnh); gồm 819 lát có gan và 83 lát không có gan | Dice trung bình từng lát trên toàn bộ tập test: **0,9025 ± 0,1760**; trên 819 lát có gan: **0,8994**; Dice theo khối bệnh nhân: **0,9513** (37 BN). Chưa tính 95% CI | IoU toàn bộ test: 0,8522 ± 0,1895; Precision: 0,9066 ± 0,1722; Recall: 0,9136 ± 0,1834. Trên 819 lát có gan: IoU 0,8476; Precision 0,9256; Recall 0,9116. Riêng nhóm xơ gan: Dice từng lát 0,9006; Dice theo khối bệnh nhân 0,9482 (31 BN). Dự đoán nhầm có gan ở 6/83 lát không có gan | Notebook đánh giá mô hình phân vùng gan và bảng tổng hợp kết quả tập test |
+| **CirrGuide-Seg (ResNet50 + Attention U-Net, Mốc 3)** | Cùng tập test; đánh giá trên dữ liệu sau khi hoàn thành tiền xử lý theo CirrGuide | Chưa có kết quả chính thức | Chưa có | Notebook tiền xử lý và huấn luyện phân vùng giai đoạn 1; đang thực hiện |
+| **CirrGuide-Cls 3 lớp (Mốc 3)** | Tập test chính thức của nhóm bệnh nhân xơ gan: 31 BN, 664 lát; sử dụng dữ liệu sau tiền xử lý theo CirrGuide | Chưa có Accuracy và macro F1 | Chưa có F1 từng lớp, QWK, MAE, ma trận nhầm lẫn và kết quả theo bệnh nhân | Notebook huấn luyện và đánh giá mô hình phân loại; chưa có kết quả |
+
+**Lưu ý:** Baseline 1 được giữ lại làm mốc so sánh với mô hình tái hiện CirrGuide. Không so sánh trực tiếp kết quả của hai pipeline để kết luận mô hình nào tốt hơn nếu chưa kiểm soát sự khác biệt về tiền xử lý và cấu hình huấn luyện. Các chỉ số của CirrGuide-Seg và CirrGuide-Cls sẽ được cập nhật sau khi nhóm hoàn thành thực nghiệm trên pipeline mới.
 
 ### B2. Ablation (Mốc 3)
 
@@ -104,11 +108,10 @@ Các cấu hình lấy đúng theo Bảng 4 của CirrGuide. Cột "Số của b
 
 ### B3. Đối chiếu với y văn
 
-**Phân vùng.** Mô hình U-Net của nhóm đạt Dice trung bình từng lát 0,8994 trên 819 lát có gan của tập test (nhóm xơ gan 0,9006); IoU 0,8476; Precision (0,9256) cao hơn Recall (0,9116), nghĩa là mô hình ít tô thừa hơn bỏ sót vùng gan.
 
 * So với **#1 CirrGuide** (cùng dataset, cùng tập 31 bệnh nhân xơ gan ở test nếu nhóm dùng đúng split chính thức): Dice nhóm xơ gan 0,9006 so với 0,8983 của CirrGuide và 0,8967 của U-Net trong bài đó. Chênh lệch dưới 0,005, với 31 bệnh nhân và không có CI nên **chưa kết luận hơn kém**. Cũng cần lưu ý bài không nêu rõ cách tính Dice (theo lát hay theo khối), và mIoU của bài (0,8414) chưa chắc cùng định nghĩa với IoU của nhóm.
 * So với **#4 (CirrMRI600+)**: Dice của các mô hình 2D trên T2W là 0,69–0,77 và 3D tốt nhất là 0,8651. Dice của nhóm cao hơn, nhưng phép so sánh *không công bằng* vì bài #4 có thể tính theo khối bệnh nhân và khác chiến lược huấn luyện (số epoch, augmentation), còn nhóm tính theo từng lát.
-* So với **#3 (Nowak 2021)**: Dice 0,983 cao hơn nhóm. Phép so sánh *không công bằng* vì bài #3 chỉ dùng một lát ở thùy đuôi, nơi gan lớn và rõ, còn nhóm dùng cả các lát ở rìa gan nơi gan rất nhỏ (có lát Dice bằng 0).
+* So với **#3 (Nowak 2021)**: Dice 0,983. Phép so sánh *không công bằng* vì bài #3 chỉ dùng một lát ở thùy đuôi, nơi gan lớn và rõ, còn nhóm dùng cả các lát ở rìa gan nơi gan rất nhỏ (có lát Dice bằng 0).
 
 **Phân loại.** Chưa có kết quả nên chưa đối chiếu được. Khi có kết quả:
 
@@ -146,8 +149,7 @@ Mốc: M3 tuần 10 · M4 tuần 12 · Final tuần 15. Cột "Ngày dự kiến
 * Tập test phân loại chỉ có 31 bệnh nhân, lớp mức vừa chỉ 6 bệnh nhân (như CirrGuide), nên số theo bệnh nhân của lớp này rất dao động.
 * CirrGuide không công bố cách crop, cách chuẩn hóa, danh sách augmentation, ngưỡng τ và kích thước lớp ẩn của MLP; nhóm sẽ tự chọn, ghi rõ trong README và không nhận đó là chi tiết của tác giả. Kết quả tái hiện có thể không trùng 0,6958 / 0,6155.
 * Mô hình mới được kiểm định nội bộ trên một bộ dữ liệu, chưa có kiểm định ngoài.
-* Câu hỏi cho GV: thầy gợi ý làm nhị phân trước rồi 4 lớp. Nhóm xin chỉ tái hiện đúng CirrGuide (3 mức độ nhẹ/vừa/nặng, chỉ nhóm xơ gan, split chính thức) để có mốc đối chiếu trực tiếp với y văn, và không làm nhị phân hay 4 lớp. Cách này có được chấp nhận không?
-
+* Câu hỏi cho GV: thầy gợi ý làm nhị phân trước rồi 4 lớp. Nhóm đang ưu tiên tái hiện CirrGuide với bài toán 3 mức độ nhẹ/vừa/nặng để đối chiếu trực tiếp với bài báo. Đồng thời, nhóm sẽ triển khai các bài toán phân loại nhị phân và 4 lớp theo góp ý của giảng viên. Nhóm cần thống nhất cách định nghĩa nhãn và phân chia dữ liệu cho các bài toán mở rộng để bảo đảm đánh giá đúng theo bệnh nhân.
 ---
 
 ## C. Tự đánh giá dự án theo Phụ lục FAIR, TRIPOD+AI, PROBAST+AI
@@ -156,8 +158,8 @@ Mốc: M3 tuần 10 · M4 tuần 12 · Final tuần 15. Cột "Ngày dự kiến
 
 | Mục | Trả lời | Bằng chứng |
 |-|-|-|
-| Nguồn, phiên bản, ngày tải; checksum file dùng để huấn luyện | CirrMRI600+ (Jha et al., Scientific Data 2025;12:896, công bố 28/05/2025), tải từ OSF https://osf.io/cuk24/. Ngày tải: [20/9/2026]. SHA-256 của file zip dùng để huấn luyện: **[CẦN ĐIỀN: chạy `sha256sum Cirrhosis_T2_2D.zip` rồi dán chuỗi 64 ký tự]** | https://www.nature.com/articles/s41597-025-05201-7 |
-| Giấy phép / DUA, căn cứ được phép dùng | Bản tóm tắt của bài dữ liệu ghi CC BY-SA 4.0. **Chưa khớp hoàn toàn với OSF:** trang dự án OSF (kiểm tra 28/11/2026) hiển thị trường License là "Other". Nhóm mở mục Files/Wiki của OSF để đọc điều khoản thực tế và dán nguyên văn vào đây: [CẦN ĐIỀN]. Trong lúc chờ xác nhận: dữ liệu công khai, dùng cho học tập, ghi nguồn, không đưa dữ liệu ảnh vào repo | https://osf.io/cuk24/ |
+| Nguồn, phiên bản, ngày tải; checksum file dùng để huấn luyện | CirrMRI600+ (Jha et al., Scientific Data 2025;12:896, công bố 28/05/2025), tải từ OSF https://osf.io/cuk24/. Ngày tải: [20/9/2026]. SHA-256 của file zip dùng để huấn luyện: | https://www.nature.com/articles/s41597-025-05201-7 |
+| Giấy phép / DUA, căn cứ được phép dùng | Bản tóm tắt của bài dữ liệu ghi CC BY-SA 4.0. **Chưa khớp hoàn toàn với OSF:** trang dự án OSF (kiểm tra 28/11/2026) hiển thị trường License là "Other". Nhóm mở mục Files/Wiki của OSF để đọc điều khoản thực tế. Trong lúc chờ xác nhận: dữ liệu công khai, dùng cho học tập, ghi nguồn, không đưa dữ liệu ảnh vào repo | https://osf.io/cuk24/ |
 | Datasheet: quần thể, tiêu chí chọn/loại, định nghĩa và đơn vị biến, giới hạn | Quần thể: 373 BN, ảnh T2W (318 xơ gan có mask gan và mức độ 1–3 từ "Radiological Evaluation", gồm 131 nhẹ, 114 vừa, 73 nặng; 55 khỏe mạnh có mask gan). Ảnh xơ gan là PNG 2D chia sẵn train/valid/test (6.766 lát = 5.428 + 674 + 664); ảnh khỏe là NIfTI 3D nhóm tự tách thành 2.143 lát (thang 0–255, mask nhị phân); tổng 8.909 lát. Dữ liệu gốc thu tại Đại học Istanbul (một trung tâm, nhiều hãng máy). Giới hạn: nhãn mức độ từ đọc ảnh, không phải sinh thiết; nhóm khỏe nhỏ; một nguồn dữ liệu | `CirrMRI600_full_dataset.csv` |
 | Không có định danh bệnh nhân | Nhóm chỉ dùng mã dạng cirr_xxx, healthy_xx; không đưa ảnh hay họ tên vào repo. Theo bài dữ liệu, dữ liệu gốc đã được ẩn danh theo yêu cầu IRB, loại bỏ thông tin sức khỏe cá nhân (PHI) và chuyển từ DICOM sang NIfTI | https://www.nature.com/articles/s41597-025-05201-7 |
 
@@ -165,7 +167,7 @@ Mốc: M3 tuần 10 · M4 tuần 12 · Final tuần 15. Cột "Ngày dự kiến
 
 * **Câu hỏi nghiên cứu của nhóm:** Với ảnh MRI T2W 2D, pipeline hai giai đoạn của CirrGuide (ResNet50 + Attention U-Net tạo mask mềm; ResNet50 phân loại có Mask-Guided Attention Pooling) có tái hiện được kết quả phân loại 3 mức độ xơ gan (nhẹ, vừa, nặng) trên split chính thức của CirrMRI600+ không, và mask mềm có cải thiện so với chỉ dùng đặc trưng toàn cục không?
 * **Hướng dẫn báo cáo phù hợp:** *TRIPOD+AI*, vì đề tài phát triển và đánh giá một mô hình dự đoán chẩn đoán (Phụ lục §3.2). Không dùng STARD-AI vì nhóm không đánh giá một xét nghiệm AI có sẵn so với chuẩn tham chiếu; không dùng DECIDE-AI vì chưa đánh giá lâm sàng giai đoạn sớm.
-* **Số mục checklist đã đáp ứng / tổng số mục; các mục còn thiếu:** [CẦN ĐIỀN: tải checklist TRIPOD+AI, đếm thật; hiện checklist chưa điền].
+* **Số mục checklist đã đáp ứng / tổng số mục; các mục còn thiếu:** 
 * **Kết cục, nhãn, T0, biến có sẵn tại T0:** mức độ xơ gan 3 lớp (0 nhẹ, 1 vừa, 2 nặng). T0 là lúc có ảnh MRI T2W; biến dự báo chỉ gồm ảnh MRI (không dùng tuổi, giới, xét nghiệm).
 
 **Thiết kế mô hình và đối chiếu với CirrGuide.** Nhóm chỉ dùng 318 bệnh nhân xơ gan, split chính thức 256/31/31, bám đúng bài gốc.
@@ -187,8 +189,8 @@ Mốc: M3 tuần 10 · M4 tuần 12 · Final tuần 15. Cột "Ngày dự kiến
 
 | Miền | Nguy cơ sai lệch | Căn cứ trong repo (file, dòng) | Việc sẽ làm để giảm nguy cơ |
 |-|-|-|-|
-| Người tham gia và nguồn dữ liệu | Cao | Phần phân loại chỉ có bệnh nhân xơ gan, một trung tâm, không có nhóm khỏe nên không phản ánh phổ bệnh thực tế; nhãn mức độ đến từ đọc ảnh. [file code: điền tên file và dòng] | Grad-CAM; nêu rõ hạn chế về một nguồn dữ liệu và nhãn từ đọc ảnh |
-| Phân tích (chia theo bệnh nhân, fit chỉ trên train, cỡ mẫu, dữ liệu thiếu) | Không rõ | Có: chia theo bệnh nhân (train 300 / valid 36 / test 37 BN) và kiểm tra giao các tập = 0; chuẩn hóa không fit từ dữ liệu (min–max từng lát, thống kê ImageNet cố định); weighted sampling tính chỉ từ train. Thiếu: calibration, khoảng tin cậy, chứng minh cỡ mẫu; test chỉ 31 BN, lớp mức vừa chỉ 6 BN. [file code: điền tên file và dòng] | Bootstrap theo bệnh nhân lấy 95% CI; calibration và Brier; báo cáo theo bệnh nhân |
+| Người tham gia và nguồn dữ liệu | Cao | Phần phân loại chỉ có bệnh nhân xơ gan, một trung tâm, không có nhóm khỏe nên không phản ánh phổ bệnh thực tế; nhãn mức độ đến từ đọc ảnh. | Grad-CAM; nêu rõ hạn chế về một nguồn dữ liệu và nhãn từ đọc ảnh |
+| Phân tích (chia theo bệnh nhân, fit chỉ trên train, cỡ mẫu, dữ liệu thiếu) | Không rõ | Có: chia theo bệnh nhân (train 300 / valid 36 / test 37 BN) và kiểm tra giao các tập = 0; chuẩn hóa không fit từ dữ liệu (min–max từng lát, thống kê ImageNet cố định); weighted sampling tính chỉ từ train. Thiếu: calibration, khoảng tin cậy, chứng minh cỡ mẫu; test chỉ 31 BN, lớp mức vừa chỉ 6 BN. | Bootstrap theo bệnh nhân lấy 95% CI; calibration và Brier; báo cáo theo bệnh nhân |
 
 Tính áp dụng (quần thể, bối cảnh dùng mô hình): thấp. Dữ liệu một nguồn, nhóm khỏe nhỏ, chưa có kiểm định ngoài nên chưa đủ để dùng trong lâm sàng.
 
@@ -197,7 +199,7 @@ Tính áp dụng (quần thể, bối cảnh dùng mô hình): thấp. Dữ li�
 | Mục | Đạt / Chưa | Bằng chứng |
 |-|-|-|
 | Datasheet | Một phần | Mục C1 (bản tóm tắt); chưa có file datasheet riêng |
-| Phiên bản + checksum dữ liệu | Chưa | Có nguồn và bài công bố (mục C1); SHA-256: [CẦN ĐIỀN sau khi chạy `sha256sum`] |
+| Phiên bản + checksum dữ liệu | Chưa | Có nguồn và bài công bố (mục C1); SHA-256:  |
 | Không định danh; căn cứ được phép dùng dữ liệu | Đạt một phần | Dữ liệu công khai, đã ẩn danh theo bài dữ liệu; giấy phép cần đối chiếu lại với OSF (mục C1) |
 | Chọn đúng hướng dẫn báo cáo + checklist đã điền | Một phần | Đã chọn TRIPOD+AI (mục C2); checklist chưa điền |
 | Định nghĩa kết cục, nhãn, T0 | Đạt | Mục C2 |
@@ -212,4 +214,4 @@ Tính áp dụng (quần thể, bối cảnh dùng mô hình): thấp. Dữ li�
 
 | Công cụ | Dùng cho phần nào | Nhóm đã kiểm chứng lại bằng cách nào |
 |-|-|-|
-| Claude (Anthropic) | Hỗ trợ viết code Colab (tải dữ liệu, đánh giá, phân loại); giải thích khái niệm và pipeline CirrGuide; hướng dẫn đọc và tóm tắt các bài báo; rà soát tính nhất quán số liệu và soạn lại bản Test 2 theo nhận xét của GV | Đối chiếu số liệu phân vùng với slide báo cáo và notebook; đối chiếu mô tả pipeline và số liệu CirrGuide với bản PDF và trang arXiv 2609.14010; đọc lại abstract các bài #3, #4, #5, #8, #10, #11 |
+| Claude (Anthropic) | Hỗ trợ viết code Colab (tải dữ liệu, đánh giá, phân loại); giải thích khái niệm và pipeline CirrGuide; hướng dẫn đọc và tóm tắt các bài báo| Đối chiếu số liệu phân vùng với slide báo cáo và notebook; đối chiếu mô tả pipeline và số liệu CirrGuide với bản PDF và trang arXiv 2609.14010; đọc lại abstract các bài #3, #4, #5, #8, #10, #11 |
